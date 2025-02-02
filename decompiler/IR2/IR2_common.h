@@ -8,7 +8,7 @@
 #include "decompiler/Function/Warnings.h"
 #include "decompiler/util/TP_Type.h"
 
-#include "third-party/fmt/core.h"
+#include "fmt/core.h"
 
 namespace decompiler {
 enum class AccessMode : u8 {
@@ -162,6 +162,7 @@ enum class FixedOperatorKind {
   VECTOR_MINUS,
   VECTOR_CROSS,
   VECTOR_FLOAT_PRODUCT,
+  VECTOR_XYZ_PRODUCT,
   L32_NOT_FALSE_CBOOL,
   VECTOR_3_DOT,
   PROCESS_TO_PPOINTER,

@@ -12,11 +12,10 @@
 #include "Reader.h"
 
 #include "common/log/log.h"
-#include "common/repl/util.h"
 #include "common/util/FileUtil.h"
 #include "common/util/FontUtils.h"
 
-#include "third-party/fmt/core.h"
+#include "fmt/core.h"
 
 namespace goos {
 

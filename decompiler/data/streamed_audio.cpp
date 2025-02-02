@@ -7,7 +7,7 @@
 #include "common/util/FileUtil.h"
 #include "common/util/string_util.h"
 
-#include "third-party/fmt/core.h"
+#include "fmt/core.h"
 #include "third-party/json.hpp"
 
 namespace decompiler {
@@ -38,9 +38,9 @@ struct AudioDir {
   int entry_count() const { return entries.size(); }
 
   void debug_print() const {
-    for (auto& e : entries) {
-      // lg::debug("\"{}\" 0x{:07x} - 0x{:07x}", e.name, e.start_byte, e.end_byte);
-    }
+    // for (auto& e : entries) {
+    // lg::debug("\"{}\" 0x{:07x} - 0x{:07x}", e.name, e.start_byte, e.end_byte);
+    // }
   }
 };
 
@@ -164,13 +164,16 @@ AudioDir read_audio_dir(const decompiler::Config& config, const fs::path& path) 
         u64 data;
         struct {
           u64 name : 42;
-          bool stereo : 1;
-          bool international : 1;
-          u8 param : 4;
+          u64 stereo : 1;
+          u64 international : 1;
+          u64 param : 4;
           u64 offset : 16;
         };
       };
     };
+
+    static_assert(sizeof(DirEntryJak3) == sizeof(u64));
+
     dir = reader.read<VagDirJak3>();
     ASSERT(dir.id[0] == 0x41574756);
     ASSERT(dir.id[1] == 0x52494444);
@@ -210,7 +213,7 @@ struct AudioFileInfo {
 };
 
 AudioFileInfo process_audio_file(const fs::path& output_folder,
-                                 nonstd::span<const uint8_t> data,
+                                 std::span<const uint8_t> data,
                                  const std::string& name,
                                  const std::string& suffix,
                                  bool stereo) {
@@ -266,7 +269,7 @@ void process_streamed_audio(const decompiler::Config& config,
   for (size_t lang_id = 0; lang_id < audio_files.size(); lang_id++) {
     auto& file = audio_files[lang_id];
     auto wad_data = file_util::read_binary_file(input_dir / "VAG" / file);
-    auto suffix = fs::path(file).extension().u8string().substr(1);
+    auto suffix = fs::path(file).extension().string().substr(1);
     bool int_bank_p = suffix.compare("INT") == 0;
     langs.push_back(suffix);
     for (int i = 0; i < dir_data.entry_count(); i++) {
@@ -276,7 +279,7 @@ void process_streamed_audio(const decompiler::Config& config,
       }
 
       lg::info("File {}, total {:.2f} minutes", entry.name, audio_len / 60.0);
-      auto data = nonstd::span(wad_data).subspan(entry.start_byte);
+      auto data = std::span(wad_data).subspan(entry.start_byte);
       auto info = process_audio_file(output_path, data, entry.name, suffix, entry.stereo);
       audio_len += info.length_seconds;
       filename_data[i][lang_id + 1] = info.filename;

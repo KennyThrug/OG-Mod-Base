@@ -68,7 +68,7 @@
   (icelandic 17)
   (russian 18)
   (polish 19)
-  (lithuanian 19)
+  (lithuanian 20)
 
   (custom 999) ;; temp
   )
@@ -81,7 +81,6 @@
    (cheats-purchased  pc-cheats)
    (cheats-unlocked   pc-cheats)
    (cheats-mask       pc-cheats)
-   (cheats-backup     pc-cheats) ;; backup for 'cheats', persisted to disk to be restored when disabling speedrunner mode TODO use mask instead
    ;; music
    (music-unlocked  bit-array)
    (flava-unlocked  symbol 6)
@@ -90,7 +89,8 @@
    (fast-airlock?  symbol)
    (fast-elevator? symbol)
    (fast-progress? symbol)
-   
+   (minimap-force-north   symbol)
+
    (stats   statistics)
 
    ;; gfx
@@ -99,6 +99,10 @@
 
    ;; other
    (controller-led-status?    symbol)
+   (speedrunner-mode-custom-bind uint32)
+   (memcard-subtitles? symbol)
+   (hint-subtitles? symbol)
+
    (text-language pc-language) ;; language for game text
 	 )
 
@@ -110,6 +114,7 @@
   )
 
 (define *pc-settings* (the pc-settings-jak2 #f))
+(define *matrix-minimap-north* (quaternion->matrix (new 'static 'matrix) (quaternion-vector-angle! (new 'static 'quaternion) *y-vector* (degrees 180))))
 
 
 ;; jak 2 discord rpc structure
@@ -141,8 +146,10 @@
   (true! (-> obj fast-elevator?))
   (false! (-> obj fast-progress?))
   (true! (-> obj smooth-minimap?))
+  (false! (-> obj minimap-force-north))
   (false! (-> obj hires-clouds?))
-  
+  (set! (-> obj speedrunner-mode-custom-bind) 0)
+
   (cond
     ((and (= *default-territory* GAME_TERRITORY_SCEE) (= (-> obj text-language) (pc-language english)))
       (set! (-> obj text-language) (pc-language uk-english))
@@ -155,6 +162,13 @@
       )
     (else
       ))
+
+  (set! (-> obj memcard-volume-sfx) 0.5)
+  (set! (-> obj memcard-volume-music) 0.4)
+  (set! (-> obj memcard-volume-dialog) 0.75)
+  (set! (-> obj memcard-vibration?) #t)
+  (set! (-> obj memcard-subtitles?) #f)
+  (set! (-> obj hinttitles?) #t)
   0)
 
 (defmethod reset-extra ((obj pc-settings-jak2) (call-handlers symbol))
@@ -170,8 +184,9 @@
   (clear-all! (-> obj music-unlocked))
   (dotimes (i 6)
     (set! (-> obj flava-unlocked i) #f))
-  
+
   (set! (-> obj stats) *statistics*)
+  (initialize (-> obj stats kill-stats))
   0)
 
 (defmethod reset-input ((obj pc-settings-jak2) (device symbol) (call-handlers symbol))
@@ -263,7 +278,7 @@
                               :hijack-speech-chance 0.45
 
                               :sewer-valve-target-seconds 75
-                              
+
                               :kill-civvie-target 40
                               :kill-car-target 20
                               ))

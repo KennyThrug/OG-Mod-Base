@@ -30,6 +30,10 @@
   "dma-buffer.o"
   "dma-bucket.o"
   "dma-disasm.o"
+  "pc-cheats.o" ;; added
+  "pckernel-h.o" ;; added
+  "pckernel-impl.o" ;; added
+  "pc-debug-common.o" ;; added
   "pad.o"
   "gs.o"
   "display-h.o"
@@ -236,6 +240,10 @@
   "game-task.o"
   "game-save.o"
   "settings.o"
+  "autosplit-h.o" ;; added
+  "autosplit.o" ;; added
+  "popup-menu-h.o" ;; added
+  "speedruns-h.o" ;; added
   "mood-tables.o"
   "mood-tables2.o"
   "mood.o"
@@ -246,6 +254,7 @@
   "sky-data.o"
   "sky-tng.o"
   "load-state.o"
+  "pc-debug-methods.o" ;; added
   "level-info.o"
   "level.o"
   "text.o"
@@ -337,6 +346,8 @@
   "board-states.o"
   "mech-h.o"
   "menu.o"
+  "popup-menu.o" ;; added
+  "speedruns.o" ;; added
   "drawable.o"
   "drawable-group.o"
   "drawable-inline-array.o"
@@ -344,6 +355,11 @@
   "prototype.o"
   "main-collide.o"
   "video.o"
+  "capture-pc.o" ;; added
+  "pckernel-common.o" ;; added
+  "pckernel.o" ;; added
+  "subtitle3-h.o" ;; added
+  "subtitle3.o" ;; added
   "main.o"
   "collide-cache.o"
   "collide-debug.o"
@@ -402,6 +418,9 @@
   "visvol-edit.o"
   "collision-editor.o"
   "speech-manager.o"
+  "anim-tester-x.o" ;; added
+  "vag-player.o" ;; added
+  "default-menu-pc.o" ;; added
   "dir-tpages.go"
   "tpage-1.go"
   "tpage-2.go"
@@ -462,4 +481,5 @@
   "ragdoll-test.o"
   "debris.o"
   "shield-sphere.o"
+  "entity-debug.o" ;; added
  ))

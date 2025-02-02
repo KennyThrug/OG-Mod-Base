@@ -16,13 +16,14 @@
 
 #include "common/util/Assert.h"
 
-#include "third-party/fmt/core.h"
-#include "third-party/fmt/format.h"
+#include "fmt/core.h"
+#include "fmt/format.h"
 
 const std::unordered_map<std::string, GameTextVersion> sTextVerEnumMap = {
     {"jak1-v1", GameTextVersion::JAK1_V1},
     {"jak1-v2", GameTextVersion::JAK1_V2},
-    {"jak2", GameTextVersion::JAK2}};
+    {"jak2", GameTextVersion::JAK2},
+    {"jak3", GameTextVersion::JAK3}};
 
 const std::string& get_text_version_name(GameTextVersion version) {
   for (auto& [name, ver] : sTextVerEnumMap) {
@@ -261,7 +262,8 @@ bool GameTextFontBank::valid_char_range(const char in) const {
     return ((in >= '0' && in <= '9') || (in >= 'A' && in <= 'Z') ||
             m_passthrus->find(in) != m_passthrus->end()) &&
            in != '\\';
-  } else if (m_version == GameTextVersion::JAK2) {
+  } else if (m_version == GameTextVersion::JAK2 || m_version == GameTextVersion::JAK3 ||
+             m_version == GameTextVersion::JAKX) {
     return ((in >= '0' && in <= '9') || (in >= 'A' && in <= 'Z') || (in >= 'a' && in <= 'z') ||
             m_passthrus->find(in) != m_passthrus->end()) &&
            in != '\\';
@@ -557,6 +559,8 @@ static std::vector<ReplaceInfo> s_replace_info_jak1 = {
     {"U~Y~-13H~+2V,~Z", "Ų"},
     {"U~Y~-18H~-10V-~Z", "Ū"},
     {"I~Y~-8H~+1V,~Z", "Į"},
+    // czech specific
+    {"U~Y~-23H~-5Vº~Z", "Ů"},
 
     // tildes
     {"N~Y~-22H~-4V<TIL>~Z", "Ñ"},
@@ -573,6 +577,8 @@ static std::vector<ReplaceInfo> s_replace_info_jak1 = {
     {"N~Y~-21H~-5V'~Z", "Ń"},
     {"S~Y~-21H~-5V'~Z", "Ś"},
     {"Z~Y~-21H~-5V'~Z", "Ź"},
+    // czech specific
+    {"Y~Y~-25H~-4V'~Z", "Ý"},
 
     // double acute accents
     {"O~Y~-28H~-4V'~-9H'~Z", "Ő"},   // custom
@@ -599,6 +605,22 @@ static std::vector<ReplaceInfo> s_replace_info_jak1 = {
     {"O~Y~-22H~-4V¨~Z", "Ö"},
     {"O~Y~-22H~-3V¨~Z", "ö"},  // dumb
     {"U~Y~-22H~-3V¨~Z", "Ü"},
+
+    // caron - Ǎ ǎ Ě ě Ǧ ǧ Ǐ ǐ Ǒ ǒ Ǔ ǔ Y̌ y̌
+    {"A~Y~-20H~-4Vˇ~Z", "Ǎ"},
+    {"E~Y~-20H~-5Vˇ~Z", "Ě"},
+    {"G~Y~-20H~-5Vˇ~Z", "Ǧ"},
+    {"I~Y~-19H~-5Vˇ~Z", "Ǐ"},
+    {"O~Y~-20H~-4Vˇ~Z", "Ǒ"},
+    {"U~Y~-24H~-3Vˇ~Z", "Ǔ"},
+    {"Y~Y~-24H~-3Vˇ~Z", "Y̌"},
+    // czech specific - Č Ň Ř Š Ž Ť
+    {"C~Y~-25H~-9Vˇ~Z", "Č"},
+    {"N~Y~-23H~-5Vˇ~Z", "Ň"},
+    {"R~Y~-24H~-5Vˇ~Z", "Ř"},
+    {"S~Y~-24H~-5Vˇ~Z", "Š"},
+    {"T~Y~-23H~-5Vˇ~Z", "Ť"},
+    {"Z~Y~-23H~-5Vˇ~Z", "Ž"},
 
     // dakuten katakana
     {"~Yウ~Z゛", "ヴ"},
@@ -913,7 +935,9 @@ GameTextFontBank g_font_bank_jak1_v2(GameTextVersion::JAK1_V2,
  * GAME TEXT FONT BANK - JAK 2
  * ================================
  * This font is used in:
- * - Jak 2 - NTSC - v1
+ * - Jak II
+ * - Jak II: Renegade
+ * - ジャックＸダクスター2
  */
 
 static std::unordered_set<char> s_passthrus_jak2 = {'~', ' ', ',', '.', '-', '+', '(', ')',
@@ -962,6 +986,10 @@ static std::vector<ReplaceInfo> s_replace_info_jak2 = {
     {"u~Y~-18H~-15V-~Z", "ū"},
     {"I~Y~-8H~+4V,~Z", "Į"},
     {"i~Y~-8H~+4V,~Z", "į"},
+    // czech specific
+    {"U~Y~-24H~-7Vº~Z", "Ů"},
+    {"u~Y~-23H~-5Vº~Z", "ů"},
+    {"t~Y~-7H~-21V,~Z", "ť"},
 
     // tildes
     {"N~Y~-22H~-4V<TIL>~Z", "Ñ"},
@@ -981,6 +1009,11 @@ static std::vector<ReplaceInfo> s_replace_info_jak2 = {
     {"o~Y~-26H~-4V'~Z", "ó"},
     {"U~Y~-24H~-3V'~Z", "Ú"},
     {"u~Y~-24H~-3V'~Z", "ú"},
+    {"Z~Y~-24H~-3V'~Z", "Ź"},
+    {"z~Y~-24H~-3V'~Z", "ź"},
+    // czech specific
+    {"Y~Y~-26H~-5V'~Z", "Ý"},
+    {"~+7Vy~-7V~Y~-24H~-3V'~Z", "ý"},
 
     // circumflex
     {"A~Y~-20H~-4V^~Z", "Â"},
@@ -1011,10 +1044,39 @@ static std::vector<ReplaceInfo> s_replace_info_jak2 = {
     {"a~Y~-25H~-5V¨~Z", "ä"},
     {"E~Y~-20H~-5V¨~Z", "Ë"},
     {"I~Y~-19H~-5V¨~Z", "Ï"},
+    {"i~Y~-26H~-4V¨~Z", "ï"},
     {"O~Y~-26H~-8V¨~Z", "Ö"},
     {"o~Y~-26H~-4V¨~Z", "ö"},
     {"U~Y~-25H~-8V¨~Z", "Ü"},
     {"u~Y~-24H~-3V¨~Z", "ü"},
+
+    // caron - Ǎ ǎ Ě ě Ǧ ǧ Ǐ ǐ Ǒ ǒ Ǔ ǔ Y̌ y̌
+    {"A~Y~-25H~-9Vˇ~Z", "Ǎ"},
+    {"a~Y~-24H~-5Vˇ~Z", "ǎ"},
+    {"E~Y~-22H~-8Vˇ~Z", "Ě"},
+    {"e~Y~-25H~-4Vˇ~Z", "ě"},
+    {"G~Y~-24H~-8Vˇ~Z", "Ǧ"},
+    {"~+7Vg~-7V~Y~-25H~-4Vˇ~Z", "ǧ"},
+    {"I~Y~-19H~-8Vˇ~Z", "Ǐ"},
+    {"i~Y~-19H~-8Vˇ~Z", "ǐ"},
+    {"O~Y~-25H~-7Vˇ~Z", "Ǒ"},
+    {"o~Y~-25H~-4Vˇ~Z", "ǒ"},
+    {"U~Y~-25H~-6Vˇ~Z", "Ǔ"},
+    {"u~Y~-24H~-3Vˇ~Z", "ǔ"},
+    {"Y~Y~-25H~-5Vˇ~Z", "Y̌"},
+    {"~+7Vy~-7V~Y~-25H~-3Vˇ~Z", "y̌"},
+    // czech specific - Č č Ň ň Ř ř Š š Ž ž Ť
+    {"C~Y~-25H~-9Vˇ~Z", "Č"},
+    {"c~Y~-24H~-5Vˇ~Z", "č"},
+    {"N~Y~-25H~-9Vˇ~Z", "Ň"},
+    {"n~Y~-24H~-5Vˇ~Z", "ň"},
+    {"R~Y~-25H~-9Vˇ~Z", "Ř"},
+    {"r~Y~-22H~-5Vˇ~Z", "ř"},
+    {"S~Y~-25H~-9Vˇ~Z", "Š"},
+    {"s~Y~-22H~-5Vˇ~Z", "š"},
+    {"T~Y~-24H~-7Vˇ~Z", "Ť"},
+    {"Z~Y~-25H~-9Vˇ~Z", "Ž"},
+    {"z~Y~-24H~-5Vˇ~Z", "ž"},
 
     // dakuten katakana
     {"~Yウ~Z゛", "ヴ"},
@@ -1149,6 +1211,25 @@ static std::vector<ReplaceInfo> s_replace_info_jak2 = {
      "<FLAG_KOREA>"},
     {"~Y~1L<FLAG_PART_FILL>~]~-1H~Y~1L<FLAG_PART_FILL>~Z~-11H~3L<FLAG_PART_JAPAN_SUN>~Z~+26H",
      "<FLAG_JAPAN>"},
+    {"~Y~1L<FLAG_PART_FILL>~Z~7L<FLAG_PART_HORZ_STRIPE_MIDDLE>~Z~7L<FLAG_PART_VERT_STRIPE_RIGHT>~]"
+     "~-1H~Y~1L<FLAG_PART_FILL>~Z~7L<FLAG_PART_HORZ_STRIPE_MIDDLE>~Z~+26H",
+     "<FLAG_FINLAND>"},
+    {"~Y~7L<FLAG_PART_FILL>~Z~5L<FLAG_PART_HORZ_STRIPE_MIDDLE>~Z~5L<FLAG_PART_VERT_STRIPE_RIGHT>~]"
+     "~-1H~Y~7L<FLAG_PART_FILL>~Z~5L<FLAG_PART_HORZ_STRIPE_MIDDLE>~Z~+26H",
+     "<FLAG_SWEDEN>"},
+    {"~Y~3L<FLAG_PART_FILL>~Z~1L<FLAG_PART_HORZ_STRIPE_MIDDLE>~Z~1L<FLAG_PART_VERT_STRIPE_RIGHT>~]"
+     "~-1H~Y~3L<FLAG_PART_FILL>~Z~1L<FLAG_PART_HORZ_STRIPE_MIDDLE>~Z~+26H",
+     "<FLAG_DENMARK>"},
+    {"~Y~1L<FLAG_PART_FILL>~Z~3L<FLAG_PART_TOP_BOTTOM_STRIPE>~]~-1H~Y~1L<FLAG_PART_FILL>~Z~3L<FLAG_"
+     "PART_TOP_BOTTOM_STRIPE>~Z~-19H~1L<FLAG_PART_VERT_STRIPE_MIDDLE>~Z~-23H~7L<FLAG_PART_VERT_"
+     "STRIPE_RIGHT>~Z~-23H~7L<FLAG_PART_HORZ_STRIPE_MIDDLE>~Z~7L<FLAG_PART_HORZ_STRIPE_MIDDLE>~Z~"
+     "+26H",
+     "<FLAG_NORWAY>"},
+    {"~Y~1L<FLAG_PART_FILL>~Z~7L<FLAG_PART_TOP_BOTTOM_STRIPE>~]~-1H~Y~1L<FLAG_PART_FILL>~Z~7L<FLAG_"
+     "PART_TOP_BOTTOM_STRIPE>~Z~-19H~1L<FLAG_PART_VERT_STRIPE_MIDDLE>~Z~-23H~3L<FLAG_PART_VERT_"
+     "STRIPE_RIGHT>~Z~-23H~3L<FLAG_PART_HORZ_STRIPE_MIDDLE>~Z~3L<FLAG_PART_HORZ_STRIPE_MIDDLE>~Z~"
+     "+26H",
+     "<FLAG_ICELAND>"},
 
     // weird stuff
     // - descenders
@@ -1905,6 +1986,21 @@ GameTextFontBank g_font_bank_jak2(GameTextVersion::JAK2,
                                   &s_passthrus_jak2);
 
 /*!
+ * ================================
+ * GAME TEXT FONT BANK - JAK 3
+ * ================================
+ * This font is used in:
+ * - Jak 3
+ */
+
+// TODO cyrillic
+
+GameTextFontBank g_font_bank_jak3(GameTextVersion::JAK3,
+                                  &s_encode_info_jak2,
+                                  &s_replace_info_jak2,
+                                  &s_passthrus_jak2);
+
+/*!
  * ========================
  * GAME TEXT FONT BANK LIST
  * ========================
@@ -1914,7 +2010,8 @@ GameTextFontBank g_font_bank_jak2(GameTextVersion::JAK2,
 std::map<GameTextVersion, GameTextFontBank*> g_font_banks = {
     {GameTextVersion::JAK1_V1, &g_font_bank_jak1_v1},
     {GameTextVersion::JAK1_V2, &g_font_bank_jak1_v2},
-    {GameTextVersion::JAK2, &g_font_bank_jak2}};
+    {GameTextVersion::JAK2, &g_font_bank_jak2},
+    {GameTextVersion::JAK3, &g_font_bank_jak3}};
 
 const GameTextFontBank* get_font_bank(GameTextVersion version) {
   return g_font_banks.at(version);
@@ -1927,6 +2024,8 @@ const GameTextFontBank* get_font_bank_from_game_version(GameVersion version) {
       return get_font_bank(GameTextVersion::JAK1_V2);
     case GameVersion::Jak2:
       return get_font_bank(GameTextVersion::JAK2);
+    case GameVersion::Jak3:
+      return get_font_bank(GameTextVersion::JAK3);
     default:
       ASSERT_MSG(false, "Unsupported game for get_font_bank_from_game_version");
   }

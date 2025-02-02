@@ -1024,8 +1024,8 @@
                         )
                       (.sub.vf vf1 vf3 vf2)
                       (.mul.vf vf1 vf1 vf1)
-                      (.add.y.vf vf1 vf1 vf1 :mask #b1)
-                      (.add.z.vf vf1 vf1 vf1 :mask #b1)
+                      (.add.y.vf.x vf1 vf1 vf1)
+                      (.add.z.vf.x vf1 vf1 vf1)
                       (.mov a2-5 vf1)
                       (let ((f0-2 a2-5)
                             (f1-1 (+ (-> a1-5 world-sphere w) (-> gp-0 w)))
@@ -1065,8 +1065,8 @@
                         )
                       (.sub.vf vf1 vf3 vf2)
                       (.mul.vf vf1 vf1 vf1)
-                      (.add.y.vf vf1 vf1 vf1 :mask #b1)
-                      (.add.z.vf vf1 vf1 vf1 :mask #b1)
+                      (.add.y.vf.x vf1 vf1 vf1)
+                      (.add.z.vf.x vf1 vf1 vf1)
                       (.mov a2-12 vf1)
                       (let ((f0-3 a2-12)
                             (f1-5 (+ (-> a1-17 world-sphere w) (-> gp-0 w)))
@@ -1711,12 +1711,12 @@
   )
 
 ;; definition for method 7 of type battle-spawner-array
-(defmethod relocate ((this battle-spawner-array) (arg0 int))
+(defmethod relocate ((this battle-spawner-array) (offset int))
   (dotimes (v1-0 (-> this length))
     (let ((a2-3 (-> this data v1-0)))
-      (&+! (-> a2-3 breeds) arg0)
+      (&+! (-> a2-3 breeds) offset)
       (if (-> a2-3 intro-path)
-          (&+! (-> a2-3 intro-path) arg0)
+          (&+! (-> a2-3 intro-path) offset)
           )
       )
     )
@@ -1724,10 +1724,10 @@
   )
 
 ;; definition for method 7 of type battle
-(defmethod relocate ((this battle) (arg0 int))
-  (&+! (-> this spawners) arg0)
-  (&+! (-> this allies) arg0)
-  (call-parent-method this arg0)
+(defmethod relocate ((this battle) (offset int))
+  (&+! (-> this spawners) offset)
+  (&+! (-> this allies) offset)
+  (call-parent-method this offset)
   )
 
 ;; definition for method 29 of type battle
@@ -1995,11 +1995,11 @@
 ;; WARN: Return type mismatch int vs none.
 (defmethod init-from-entity! ((this battle) (arg0 entity-actor))
   "Typically the method that does the initial setup on the process, potentially using the [[entity-actor]] provided as part of that.
-This commonly includes things such as:
-- stack size
-- collision information
-- loading the skeleton group / bones
-- sounds"
+   This commonly includes things such as:
+   - stack size
+   - collision information
+   - loading the skeleton group / bones
+   - sounds"
   (logior! (-> this mask) (process-mask enemy))
   (let ((s4-0 (new 'process 'trsqv)))
     (set! (-> this root) s4-0)

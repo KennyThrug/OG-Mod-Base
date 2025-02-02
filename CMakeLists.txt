@@ -1,7 +1,8 @@
 # Top Level CMakeLists.txt
 cmake_minimum_required(VERSION 3.12)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(jak)
 include(CTest)
 
@@ -40,11 +41,14 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         -fcxx-exceptions \
         -fexceptions \
         -fdiagnostics-color=always \
-        -std=c++17 \
         -mavx \
         -Wall \
         -Wno-c++11-narrowing \
         -Wno-c++98-compat \
+        -Wno-deprecated-this-capture \
+        -Wno-missing-field-initializers \
+        -Wno-sign-compare \
+        -Wno-ignored-qualifiers \
         -O3 \
         -D_CRT_SECURE_NO_WARNINGS")
 
@@ -54,7 +58,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # Note: this is only _reserved_ memory, not necessarily _committed_ memory
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LDFLAGS} -Xlinker /STACK:16000000")
     else()
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb -g -Wextra")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb -g")
     endif()
 
     # additional c++ and linker flags for release mode for our projects
@@ -87,7 +91,6 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         -Wdisabled-optimization \
         -Wformat \
         -Wextra \
-        -Wmissing-include-dirs \
         -Woverloaded-virtual \
         -Wredundant-decls \
         -Wshadow \
@@ -104,7 +107,6 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     message(STATUS "AppleClang detected - Setting Defaults")
     set(CMAKE_CXX_FLAGS
         "${CMAKE_CXX_FLAGS} \
-        -march=native \
         -Wall \
         -Winit-self \
         -ggdb \
@@ -114,13 +116,18 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
         -Wdisabled-optimization \
         -Wformat \
         -Wextra \
-        -Wmissing-include-dirs \
         -Woverloaded-virtual \
         -Wredundant-decls \
         -Wshadow \
         -Wsign-promo \
         -fdiagnostics-color=always"
         )
+    
+    # pin to AVX for macOS, hopefully all macOS runners have atleast this architecture
+    # technically speaking, SSE4 is the cutoff for Apple Silicon so...only a matter of time!
+    if(NOT CMAKE_CXX_COMPILER_TARGET STREQUAL "arm64-apple-darwin")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx")
+    endif()
 
     # additional c++ flags for release mode for our projects
     if(CMAKE_BUILD_TYPE MATCHES "Release")
@@ -220,11 +227,14 @@ build_third_party_lib(sqlite3 sqlite3)
 
 # build tree-sitter parser
 include_directories(third-party/tree-sitter/tree-sitter/lib/include)
-include_directories(third-party/tree-sitter/tree-sitter-opengoal/include)
 build_third_party_lib(tree-sitter tree-sitter)
 
 # native OS dialogs for error messages
 build_third_party_lib(libtinyfiledialogs libtinyfiledialogs)
+
+# build format library
+include_directories(third-party/fmt/include)
+build_third_party_lib(fmt fmt)
 
 # build common library
 add_subdirectory(common)
@@ -241,25 +251,6 @@ add_subdirectory(lsp)
 # build libco and zstd
 build_third_party_lib(libco libco)
 build_third_party_lib(zstd libzstd_static)
-
-
-# MOD BASE
-#add_subdirectory(third-party/freetype EXCLUDE_FROM_ALL)
-#set (FREETYPE_INCLUDE_DIRS= "third-party/freetype/")
-#set (FREETYPE_LIBRARY= "third-party/freetype/lib/")
-
-
-set(SFML_BUILD_WINDOW OFF)
-set(SFML_BUILD_GRAPHICS OFF)
-set(SFML_BUILD_NETWORK OFF)
-add_subdirectory(third-party/SFML EXCLUDE_FROM_ALL)
-#include_directories(third-party/SFML/include)
-#include_directories(third-party/SFML/lib)
-
-
-
-
-
 
 # build SDL
 include(SDLOptions)
@@ -297,10 +288,11 @@ include(test/CMakeLists.txt)
 # build lzokay library
 build_third_party_lib(lzokay lzokay)
 
-# build format library
-build_third_party_lib(fmt fmt)
-
 build_third_party_lib(stb_image stb_image)
+# build draco library for tinygltf compression support
+include_directories(third-party/draco/src)
+add_subdirectory(third-party/draco)
+add_compile_definitions(TINYGLTF_ENABLE_DRACO)
 build_third_party_lib(tiny_gltf tiny_gltf)
 build_third_party_lib(xdelta3 xdelta3)
 

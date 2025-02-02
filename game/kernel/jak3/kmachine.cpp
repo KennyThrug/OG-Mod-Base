@@ -5,6 +5,7 @@
 #include "common/symbols.h"
 
 #include "game/graphics/gfx.h"
+#include "game/graphics/jak3_texture_remap.h"
 #include "game/graphics/sceGraphicsInterface.h"
 #include "game/kernel/common/fileio.h"
 #include "game/kernel/common/kdgo.h"
@@ -20,6 +21,7 @@
 #include "game/kernel/jak3/kboot.h"
 #include "game/kernel/jak3/kdgo.h"
 #include "game/kernel/jak3/klisten.h"
+#include "game/kernel/jak3/kmachine_extras.h"
 #include "game/kernel/jak3/kmalloc.h"
 #include "game/kernel/jak3/kscheme.h"
 #include "game/kernel/jak3/ksound.h"
@@ -292,7 +294,7 @@ int InitMachine() {
 }
 
 int ShutdownMachine() {
-  Msg(6, "kernel: machine shutdown (reason %d)\n", MasterExit);
+  Msg(6, "kernel: machine shutdown (reason %d)\n", (int)MasterExit);
 
   StopIOP();
   ShutdownSound();
@@ -303,11 +305,13 @@ int ShutdownMachine() {
 }
 
 u32 KeybdGetData(u32 /*_mouse*/) {
-  ASSERT_NOT_REACHED();
+  return 0;
+  // ASSERT_NOT_REACHED();
 }
 
 u32 MouseGetData(u32 /*_mouse*/) {
-  ASSERT_NOT_REACHED();
+  // ASSERT_NOT_REACHED();
+  return 0;
 }
 
 /*!
@@ -319,20 +323,18 @@ u64 kopen(u64 fs, u64 name, u64 mode) {
   file_stream->mode = mode;
   file_stream->name = name;
   file_stream->flags = 0;
-  printf("****** CALL TO kopen() ******\n");
-  char buffer[128];
+  lg::print("****** CALL TO kopen() ******\n");
   // sprintf(buffer, "host:%s", Ptr<String>(name)->data());
-  sprintf(buffer, "%s", Ptr<String>(name)->data());
   if (!strcmp(sym_to_cstring(Ptr<Symbol4<u8>>(mode)), "read")) {
     // 0x1
-    file_stream->file = ee::sceOpen(buffer, SCE_RDONLY);
+    file_stream->file = ee::sceOpen(Ptr<String>(name)->data(), SCE_RDONLY);
   } else if (!strcmp(sym_to_cstring(Ptr<Symbol4<u8>>(mode)), "append")) {
     // new in jak 2!
     // 0x202
-    file_stream->file = ee::sceOpen(buffer, SCE_CREAT | SCE_WRONLY);
+    file_stream->file = ee::sceOpen(Ptr<String>(name)->data(), SCE_CREAT | SCE_WRONLY);
   } else {
     // 0x602
-    file_stream->file = ee::sceOpen(buffer, SCE_TRUNC | SCE_CREAT | SCE_WRONLY);
+    file_stream->file = ee::sceOpen(Ptr<String>(name)->data(), SCE_TRUNC | SCE_CREAT | SCE_WRONLY);
   }
 
   return fs;
@@ -348,38 +350,6 @@ void PutDisplayEnv(u32 alp) {
 
 void aybabtu() {}
 
-void pc_set_levels(u32 lev_list) {
-  if (!Gfx::GetCurrentRenderer()) {
-    return;
-  }
-  std::vector<std::string> levels;
-  for (int i = 0; i < LEVEL_MAX; i++) {
-    u32 lev = *Ptr<u32>(lev_list + i * 4);
-    std::string ls = Ptr<String>(lev).c()->data();
-    if (ls != "none" && ls != "#f" && ls != "") {
-      levels.push_back(ls);
-    }
-  }
-
-  Gfx::GetCurrentRenderer()->set_levels(levels);
-}
-
-void pc_set_active_levels(u32 lev_list) {
-  if (!Gfx::GetCurrentRenderer()) {
-    return;
-  }
-  std::vector<std::string> levels;
-  for (int i = 0; i < LEVEL_MAX; i++) {
-    u32 lev = *Ptr<u32>(lev_list + i * 4);
-    std::string ls = Ptr<String>(lev).c()->data();
-    if (ls != "none" && ls != "#f" && ls != "") {
-      levels.push_back(ls);
-    }
-  }
-
-  Gfx::GetCurrentRenderer()->set_active_levels(levels);
-}
-
 //// PC Stuff
 void InitMachine_PCPort() {
   // PC Port added functions
@@ -393,17 +363,18 @@ void InitMachine_PCPort() {
       },
       make_string_from_c);
 
-  make_function_symbol_from_c("__pc-set-levels", (void*)pc_set_levels);
-  make_function_symbol_from_c("__pc-set-active-levels", (void*)pc_set_active_levels);
-  // make_function_symbol_from_c("__pc-get-tex-remap", (void*)lookup_jak2_texture_dest_offset);
-  // make_function_symbol_from_c("pc-init-autosplitter-struct", (void*)init_autosplit_struct);
-  // make_function_symbol_from_c("pc-encode-utf8-string", (void*)encode_utf8_string);
+  make_function_symbol_from_c("__pc-set-levels", (void*)kmachine_extras::pc_set_levels);
+  make_function_symbol_from_c("__pc-set-active-levels",
+                              (void*)kmachine_extras::pc_set_active_levels);
+  make_function_symbol_from_c("__pc-get-tex-remap", (void*)lookup_jak3_texture_dest_offset);
+  make_function_symbol_from_c("pc-init-autosplitter-struct",
+                              (void*)kmachine_extras::init_autosplit_struct);
 
   // discord rich presence
-  // make_function_symbol_from_c("pc-discord-rpc-update", (void*)update_discord_rpc);
+  make_function_symbol_from_c("pc-discord-rpc-update", (void*)kmachine_extras::update_discord_rpc);
 
   // debugging tools
-  // make_function_symbol_from_c("alloc-vagdir-names", (void*)alloc_vagdir_names);
+  make_function_symbol_from_c("alloc-vagdir-names", (void*)kmachine_extras::alloc_vagdir_names);
 
   // external RPCs
   /*
@@ -422,6 +393,45 @@ void InitMachine_PCPort() {
   make_function_symbol_from_c("pc-get-num-external-highscores",
                               (void*)pc_get_num_external_highscores);
  */
+
+  // speedrunning stuff
+  make_function_symbol_from_c("pc-sr-mode-get-practice-entries-amount",
+                              (void*)kmachine_extras::pc_sr_mode_get_practice_entries_amount);
+  make_function_symbol_from_c("pc-sr-mode-get-practice-entry-name",
+                              (void*)kmachine_extras::pc_sr_mode_get_practice_entry_name);
+  make_function_symbol_from_c("pc-sr-mode-get-practice-entry-continue-point",
+                              (void*)kmachine_extras::pc_sr_mode_get_practice_entry_continue_point);
+  make_function_symbol_from_c(
+      "pc-sr-mode-get-practice-entry-history-success",
+      (void*)kmachine_extras::pc_sr_mode_get_practice_entry_history_success);
+  make_function_symbol_from_c(
+      "pc-sr-mode-get-practice-entry-history-attempts",
+      (void*)kmachine_extras::pc_sr_mode_get_practice_entry_history_attempts);
+  make_function_symbol_from_c(
+      "pc-sr-mode-get-practice-entry-session-success",
+      (void*)kmachine_extras::pc_sr_mode_get_practice_entry_session_success);
+  make_function_symbol_from_c(
+      "pc-sr-mode-get-practice-entry-session-attempts",
+      (void*)kmachine_extras::pc_sr_mode_get_practice_entry_session_attempts);
+  make_function_symbol_from_c("pc-sr-mode-get-practice-entry-avg-time",
+                              (void*)kmachine_extras::pc_sr_mode_get_practice_entry_avg_time);
+  make_function_symbol_from_c("pc-sr-mode-get-practice-entry-fastest-time",
+                              (void*)kmachine_extras::pc_sr_mode_get_practice_entry_fastest_time);
+  make_function_symbol_from_c("pc-sr-mode-record-practice-entry-attempt!",
+                              (void*)kmachine_extras::pc_sr_mode_record_practice_entry_attempt);
+  make_function_symbol_from_c("pc-sr-mode-init-practice-info!",
+                              (void*)kmachine_extras::pc_sr_mode_init_practice_info);
+  make_function_symbol_from_c("pc-sr-mode-get-custom-category-amount",
+                              (void*)kmachine_extras::pc_sr_mode_get_custom_category_amount);
+  make_function_symbol_from_c("pc-sr-mode-get-custom-category-name",
+                              (void*)kmachine_extras::pc_sr_mode_get_custom_category_name);
+  make_function_symbol_from_c(
+      "pc-sr-mode-get-custom-category-continue-point",
+      (void*)kmachine_extras::pc_sr_mode_get_custom_category_continue_point);
+  make_function_symbol_from_c("pc-sr-mode-init-custom-category-info!",
+                              (void*)kmachine_extras::pc_sr_mode_init_custom_category_info);
+  make_function_symbol_from_c("pc-sr-mode-dump-new-custom-category",
+                              (void*)kmachine_extras::pc_sr_mode_dump_new_custom_category);
 
   // setup string constants
   auto user_dir_path = file_util::get_user_config_dir();

@@ -36,6 +36,10 @@ Matcher Matcher::reg(Register reg) {
   return m;
 }
 
+Matcher Matcher::s6() {
+  return Matcher::reg(Register(Reg::GPR, Reg::S6));
+}
+
 Matcher Matcher::op(const GenericOpMatcher& op, const std::vector<Matcher>& args) {
   Matcher m;
   m.m_kind = Kind::GENERIC_OP;
@@ -123,6 +127,13 @@ Matcher Matcher::single(std::optional<float> value) {
   return m;
 }
 
+Matcher Matcher::any_single(int match_id) {
+  Matcher m;
+  m.m_kind = Kind::ANY_FLOAT;
+  m.m_float_out_id = match_id;
+  return m;
+}
+
 Matcher Matcher::any_quoted_symbol(int match_id) {
   Matcher m;
   m.m_kind = Kind::ANY_QUOTED_SYMBOL;
@@ -207,6 +218,13 @@ Matcher Matcher::while_loop(const Matcher& condition, const Matcher& body) {
   return m;
 }
 
+Matcher Matcher::until_loop(const Matcher& condition, const Matcher& body) {
+  Matcher m;
+  m.m_kind = Kind::UNTIL_LOOP;
+  m.m_sub_matchers = {condition, body};
+  return m;
+}
+
 Matcher Matcher::any_constant_token(int match_id) {
   Matcher m;
   m.m_kind = Kind::ANY_CONSTANT_TOKEN;
@@ -234,6 +252,15 @@ Matcher Matcher::let(bool is_star,
   Matcher m;
   m.m_kind = Kind::LET;
   m.m_let_is_star = is_star;
+  m.m_entry_matchers = entries;
+  m.m_sub_matchers = elts;
+  return m;
+}
+
+Matcher Matcher::unmerged_let(const std::vector<LetEntryMatcher>& entries,
+                              const std::vector<Matcher>& elts) {
+  Matcher m;
+  m.m_kind = Kind::UNMERGED_LET;
   m.m_entry_matchers = entries;
   m.m_sub_matchers = elts;
   return m;
@@ -457,6 +484,30 @@ bool Matcher::do_match(Form* input, MatchResult::Maps* maps_out, const Env* cons
       return false;
     } break;
 
+    case Kind::ANY_FLOAT: {
+      auto as_const_float =
+          dynamic_cast<ConstantFloatElement*>(input->try_as_single_active_element());
+      if (as_const_float) {
+        if (m_float_out_id != -1) {
+          maps_out->floats[m_float_out_id] = as_const_float->value();
+        }
+        return true;
+      }
+
+      auto as_expr = dynamic_cast<SimpleExpressionElement*>(input->try_as_single_active_element());
+      if (as_expr && as_expr->expr().is_identity()) {
+        const auto& atom = as_expr->expr().get_arg(0);
+        if (atom.is_integer_promoted_to_float()) {
+          if (m_float_out_id != -1) {
+            maps_out->floats[m_float_out_id] = atom.get_integer_promoted_to_float();
+          }
+          return true;
+        }
+      }
+
+      return false;
+    } break;
+
     case Kind::ANY_QUOTED_SYMBOL: {
       auto as_simple_atom = dynamic_cast<SimpleAtomElement*>(input->try_as_single_active_element());
       if (as_simple_atom) {
@@ -658,6 +709,22 @@ bool Matcher::do_match(Form* input, MatchResult::Maps* maps_out, const Env* cons
       return true;
     } break;
 
+    case Kind::UNTIL_LOOP: {
+      auto as_until = dynamic_cast<UntilElement*>(input->try_as_single_active_element());
+      if (!as_until) {
+        return false;
+      }
+
+      if (!m_sub_matchers.at(0).do_match(as_until->condition, maps_out, env)) {
+        return false;
+      }
+
+      if (!m_sub_matchers.at(1).do_match(as_until->body, maps_out, env)) {
+        return false;
+      }
+      return true;
+    } break;
+
     case Kind::BEGIN: {
       if ((int)m_sub_matchers.size() != input->size()) {
         return false;
@@ -714,6 +781,68 @@ bool Matcher::do_match(Form* input, MatchResult::Maps* maps_out, const Env* cons
           }
         }
         return true;
+      }
+      return false;
+    }
+
+    case Kind::UNMERGED_LET: {
+      auto as_let = dynamic_cast<LetElement*>(input->try_as_single_active_element());
+      if (as_let) {
+        size_t entries_matched = 0;
+        Form* innermost_let_body = nullptr;
+        // first try to find the innermost let, matching all let entries with the entry matchers
+        // throughout
+        as_let->apply_form([&](Form* form) {
+          for (int idx = 0; idx < form->size(); idx++) {
+            auto* f = form->at(idx);
+            // if this is the entry of the outermost let, try to do the first match
+            if (f->parent_form->parent_element == as_let) {
+              if (m_entry_matchers.at(entries_matched)
+                      .do_match(as_let->entries().at(0), maps_out, env)) {
+                entries_matched++;
+              } else {
+                return;
+              }
+            }
+            auto let = dynamic_cast<LetElement*>(f);
+            if (!let) {
+              continue;
+            }
+
+            auto let_body = dynamic_cast<LetElement*>(let->body()->at(0));
+            if (!let_body) {
+              break;
+            }
+
+            if (entries_matched == m_entry_matchers.size()) {
+              break;
+            }
+
+            if (m_entry_matchers.at(entries_matched)
+                    .do_match(let_body->entries().at(0), maps_out, env)) {
+              entries_matched++;
+            } else {
+              return;
+            }
+
+            if (entries_matched == m_entry_matchers.size()) {
+              innermost_let_body = let_body->body();
+              return;
+            }
+          }
+        });
+
+        if (entries_matched == m_entry_matchers.size() && innermost_let_body) {
+          // now match body of innermost let
+          for (int i = 0; i < (int)m_sub_matchers.size(); ++i) {
+            Form fake;
+            fake.elts().push_back(innermost_let_body->elts().at(i));
+            if (!m_sub_matchers.at(i).do_match(&fake, maps_out, env)) {
+              return false;
+            }
+          }
+          return true;
+        }
       }
       return false;
     }

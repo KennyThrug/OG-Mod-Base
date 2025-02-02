@@ -54,11 +54,11 @@ void kscheme_init_globals() {
 #endif
 }
 
-namespace {
 u32 u32_in_fixed_sym(u32 offset) {
   return Ptr<Symbol4<u32>>(s7.offset + offset)->value();
 }
 
+namespace {
 void fixed_sym_set(u32 offset, u32 value) {
   Ptr<Symbol4<u32>>(s7.offset + offset)->value() = value;
 }
@@ -664,6 +664,9 @@ Ptr<Symbol4<u32>> intern_from_c_ht(const char* name) {
  */
 Ptr<Symbol4<u32>> find_symbol_from_c(uint16_t sym_id, const char* name) {
 #ifdef JAK3_HASH_TABLE
+  if (!strcmp(name, "_empty_")) {
+    return (s7 + S7_OFF_FIX_SYM_EMPTY_PAIR).cast<Symbol4<u32>>();
+  }
   return find_symbol_from_c_ht(name);
 #endif
   // sign extend
@@ -733,6 +736,9 @@ Ptr<Symbol4<u32>> find_symbol_from_c(uint16_t sym_id, const char* name) {
  */
 Ptr<Symbol4<u32>> intern_from_c(int sym_id, int flags, const char* name) {
 #ifdef JAK3_HASH_TABLE
+  if (!strcmp(name, "_empty_")) {
+    return (s7 + S7_OFF_FIX_SYM_EMPTY_PAIR).cast<Symbol4<u32>>();
+  }
   return intern_from_c_ht(name);
 #endif
   // first, look up the symbol.
@@ -1079,8 +1085,6 @@ u64 type_typep(Ptr<Type> t1, Ptr<Type> t2) {
 
 u64 method_set(u32 type_, u32 method_id, u32 method) {
   Ptr<Type> type(type_);
-  if (method_id > 255)
-    printf("[METHOD SET ERROR] tried to set method %d\n", method_id);
 
   auto existing_method = type->get_method(method_id).offset;
 

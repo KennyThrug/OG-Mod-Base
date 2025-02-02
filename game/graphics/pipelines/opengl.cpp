@@ -23,14 +23,15 @@
 #include "game/graphics/gfx.h"
 #include "game/graphics/opengl_renderer/OpenGLRenderer.h"
 #include "game/graphics/opengl_renderer/debug_gui.h"
+#include "game/graphics/screenshot.h"
 #include "game/graphics/texture/TexturePool.h"
 #include "game/runtime.h"
 #include "game/sce/libscf.h"
 #include "game/system/hid/input_manager.h"
 #include "game/system/hid/sdl_util.h"
 
+#include "fmt/core.h"
 #include "third-party/SDL/include/SDL.h"
-#include "third-party/fmt/core.h"
 #include "third-party/imgui/imgui.h"
 #include "third-party/imgui/imgui_impl_opengl3.h"
 #include "third-party/imgui/imgui_impl_sdl.h"
@@ -73,7 +74,7 @@ struct GraphicsData {
   FrameLimiter frame_limiter;
   Timer engine_timer;
   double last_engine_time = 1. / 60.;
-  float pmode_alp = 0.f;
+  float pmode_alp = 1.f;
 
   std::string imgui_log_filename, imgui_filename;
   GameVersion version;
@@ -100,7 +101,7 @@ static int gl_init(GfxGlobalSettings& settings) {
     auto p = scoped_prof("startup::sdl::init_sdl");
     // remove SDL garbage from hooking signal handler.
     SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
       sdl_util::log_error("Could not initialize SDL, exiting");
       dialogs::create_error_message_dialog("Critical Error Encountered",
                                            "Could not initialize SDL, exiting");
@@ -219,9 +220,10 @@ static std::shared_ptr<GfxDisplay> gl_make_display(int width,
   // TODO - SDL2 doesn't seem to support HDR (and neither does windows)
   //   Related -
   //   https://answers.microsoft.com/en-us/windows/forum/all/hdr-monitor-low-brightness-after-exiting-full/999f7ee9-7ba3-4f9c-b812-bbeb9ff8dcc1
-  SDL_Window* window =
-      SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height,
-                       SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+  SDL_Window* window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                                        width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+  // TODO - rendering code on hiDPI/Retina displays is not adequate, solve it properly so that
+  // `SDL_WINDOW_ALLOW_HIGHDPI` can be added back to the window flags.
   prof().end_event();
   if (!window) {
     sdl_util::log_error("gl_make_display failed - Could not create display window");
@@ -282,23 +284,38 @@ static std::shared_ptr<GfxDisplay> gl_make_display(int width,
 
   {
     auto p = scoped_prof("startup::sdl::window_extras");
+    float dpi = 1.0f;
+    int window_display_idx = SDL_GetWindowDisplayIndex(window);
+    if (window_display_idx >= 0) {
+      SDL_GetDisplayDPI(window_display_idx, &dpi, NULL, NULL);
+      dpi /= 96.0f;
+
+      if (dpi <= 0.0f) {
+        dpi = 1.0f;
+      }
+    }
+
     // Setup Window Icon
-    // TODO - hiDPI icon
-    // https://sourcegraph.com/github.com/dfranx/SHADERed/-/blob/main.cpp?L422:24&subtree=true
-    int icon_width;
-    int icon_height;
-    std::string image_path =
-        (file_util::get_jak_project_dir() / "game" / "assets" / "appicon.png").string();
-    auto icon_data =
-        stbi_load(image_path.c_str(), &icon_width, &icon_height, nullptr, STBI_rgb_alpha);
-    if (icon_data) {
-      SDL_Surface* icon_surf = SDL_CreateRGBSurfaceWithFormatFrom(
-          (void*)icon_data, icon_width, icon_height, 32, 4 * icon_width, SDL_PIXELFORMAT_RGBA32);
-      SDL_SetWindowIcon(window, icon_surf);
-      SDL_FreeSurface(icon_surf);
-      stbi_image_free(icon_data);
+    const auto image_path = file_util::get_jak_project_dir() / "game" / "assets" /
+                            version_to_game_name(game_version) /
+                            (dpi == 1.0f ? "app64.png" : "app256.png");
+    if (fs::exists(image_path)) {
+      int icon_width;
+      int icon_height;
+
+      auto icon_data = stbi_load(image_path.string().c_str(), &icon_width, &icon_height, nullptr,
+                                 STBI_rgb_alpha);
+      if (icon_data) {
+        SDL_Surface* icon_surf = SDL_CreateRGBSurfaceWithFormatFrom(
+            (void*)icon_data, icon_width, icon_height, 32, 4 * icon_width, SDL_PIXELFORMAT_RGBA32);
+        SDL_SetWindowIcon(window, icon_surf);
+        SDL_FreeSurface(icon_surf);
+        stbi_image_free(icon_data);
+      } else {
+        lg::error("Could not load icon for OpenGL window, couldn't load image data");
+      }
     } else {
-      lg::error("Could not load icon for OpenGL window");
+      lg::error("Could not load icon for OpenGL window, {} does not exist", image_path.string());
     }
   }
 
@@ -399,18 +416,20 @@ void render_game_frame(int game_width,
       options.quick_screenshot = true;
       options.screenshot_path = file_util::make_screenshot_filepath(g_game_version);
     }
-    if (g_gfx_data->debug_gui.get_screenshot_flag()) {
+    // note : it's important we call get_screenshot_flag first because it modifies state
+    if (g_gfx_data->debug_gui.get_screenshot_flag() || g_want_screenshot) {
+      g_want_screenshot = false;
       options.save_screenshot = true;
       options.internal_res_screenshot = true;
-      options.game_res_w = g_gfx_data->debug_gui.screenshot_width;
-      options.game_res_h = g_gfx_data->debug_gui.screenshot_height;
+      options.game_res_w = g_screen_shot_settings->width;
+      options.game_res_h = g_screen_shot_settings->height;
       options.window_framebuffer_width = options.game_res_w;
       options.window_framebuffer_height = options.game_res_h;
       options.draw_region_width = options.game_res_w;
       options.draw_region_height = options.game_res_h;
-      options.msaa_samples = g_gfx_data->debug_gui.screenshot_samples;
-      options.screenshot_path = file_util::make_screenshot_filepath(
-          g_game_version, g_gfx_data->debug_gui.screenshot_name());
+      options.msaa_samples = g_screen_shot_settings->msaa;
+      options.screenshot_path =
+          file_util::make_screenshot_filepath(g_game_version, get_screen_shot_name());
     }
 
     options.draw_small_profiler_window =
@@ -445,23 +464,6 @@ void render_game_frame(int game_width,
   }
 }
 
-void update_global_profiler() {
-  if (g_gfx_data->debug_gui.dump_events) {
-    prof().set_enable(false);
-    g_gfx_data->debug_gui.dump_events = false;
-
-    // TODO - the file rotation code had an infinite loop here if it couldn't find anything
-    // matching the format
-    //
-    // Does the existing log rotation code have that problem?
-
-    auto file_path = file_util::get_jak_project_dir() / "profile_data" /
-                     fmt::format("prof-{}.json", str_util::current_local_timestamp_no_colons());
-    file_util::create_dir_if_needed_for_file(file_path);
-    prof().dump_to_json(file_path.string());
-  }
-}
-
 void GLDisplay::process_sdl_events() {
   SDL_Event evt;
   while (SDL_PollEvent(&evt) != 0) {
@@ -492,8 +494,8 @@ void GLDisplay::render() {
   // Before we process the current frames SDL events we for keyboard/mouse button inputs.
   //
   // This technically means that keyboard/mouse button inputs will be a frame behind but the
-  // event-based code is buggy and frankly not worth stressing over.  Leaving this as a note incase
-  // someone complains. Binding handling is still taken care of by the event code though.
+  // event-based code is limiting (there aren't enough events to achieve a totally stateless
+  // approach). Binding handling is still taken care of by the event code though.
   {
     auto p = scoped_prof("sdl-input-monitor-poll-for-kb-mouse");
     ImGuiIO& io = ImGui::GetIO();
@@ -600,7 +602,6 @@ void GLDisplay::render() {
   // Start timing for the next frame.
   g_gfx_data->debug_gui.start_frame();
   prof().instant_event("ROOT");
-  update_global_profiler();
 
   // toggle even odd and wake up engine waiting on vsync.
   // TODO: we could play with moving this earlier, right after the final bucket renderer.

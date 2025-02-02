@@ -7,6 +7,7 @@
 
 #include "common/cross_os_debug/xdbg.h"
 #include "common/listener_common.h"
+#include "common/log/log.h"
 
 #include "game/kernel/common/Ptr.h"
 #include "game/kernel/common/fileio.h"
@@ -31,6 +32,7 @@ Ptr<u8> OutputBufArea;
 
 // Pointer to print buffer, the buffer for printing and string formatting.
 Ptr<u8> PrintBufArea;
+size_t PrintBufSize = 0;
 
 // integer printing conversion table
 char ConvertTable[16];
@@ -48,6 +50,7 @@ void kprint_init_globals_common() {
   MessBufArea.offset = 0;
   OutputBufArea.offset = 0;
   PrintBufArea.offset = 0;
+  PrintBufSize = 0;
   memcpy(ConvertTable, "0123456789abcdef", 16);
   memset(AckBufArea, 0, sizeof(AckBufArea));
 }
@@ -82,6 +85,7 @@ void init_output() {
                             KMALLOC_MEMSET | KMALLOC_ALIGN_256, "output-buf");
     PrintBufArea = kmalloc(kdebugheap, DEBUG_PRINT_BUFFER_SIZE, KMALLOC_MEMSET | KMALLOC_ALIGN_256,
                            "print-buf");
+    PrintBufSize = DEBUG_PRINT_BUFFER_SIZE;
   } else {
     // no compiler connection, so we do not allocate buffers
     MessBufArea = Ptr<u8>(0);
@@ -90,6 +94,7 @@ void init_output() {
     // we still need a (small) print buffer for string maniuplation and debugging prints.
     PrintBufArea =
         kmalloc(kglobalheap, PRINT_BUFFER_SIZE, KMALLOC_MEMSET | KMALLOC_ALIGN_256, "print-buf");
+    PrintBufSize = PRINT_BUFFER_SIZE;
   }
 }
 
@@ -186,37 +191,37 @@ void cprintf(const char* format, ...) {
 /*!
  * Print directly to the C stdout
  * The "k" parameter is ignored, so this is just like printf
- * DONE, EXACT
+ * DONE, changed vprintf to lg::printstd
  */
 void Msg(s32 k, const char* format, ...) {
   (void)k;
   va_list args;
   va_start(args, format);
-  vprintf(format, args);
+  lg::printstd(format, args);
   va_end(args);
 }
 
 /*!
  * Print directly to the C stdout
  * This is idential to Msg
- * DONE, EXACT
+ * DONE, changed vprintf to lg::printstd
  */
 void MsgWarn(const char* format, ...) {
   va_list args;
   va_start(args, format);
-  vprintf(format, args);
+  lg::printstd(format, args);
   va_end(args);
 }
 
 /*!
  * Print directly to the C stdout
  * This is idential to Msg
- * DONE, EXACT
+ * DONE, changed vprintf to lg::printstd
  */
 void MsgErr(const char* format, ...) {
   va_list args;
   va_start(args, format);
-  vprintf(format, args);
+  lg::printstd(format, args);
   va_end(args);
 }
 
@@ -572,4 +577,11 @@ char* kitoa(char* buffer, s64 value, u64 base, s32 length, char pad, u32 flag) {
  */
 void kqtoa() {
   ASSERT(false);
+}
+
+void assert_print_buffer_has_room(const u8* ptr) {
+  const size_t size_used = ptr - PrintBufArea.c();
+  if (size_used > (PrintBufSize - 1024)) {
+    lg::die("Print Buffer Overflow: size 0x{:x} of 0x{:x}", size_used, PrintBufSize);
+  }
 }

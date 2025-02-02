@@ -390,15 +390,13 @@ u64 kopen(u64 fs, u64 name, u64 mode) {
   file_stream->mode = mode;
   file_stream->name = name;
   file_stream->flags = 0;
-  printf("****** CALL TO kopen() ******\n");
-  char buffer[128];
+  lg::print("****** CALL TO kopen() ******\n");
   // sprintf(buffer, "host:%s", Ptr<String>(name)->data());
-  sprintf(buffer, "%s", Ptr<String>(name)->data());
   if (!strcmp(info(Ptr<Symbol>(mode))->str->data(), "read")) {
-    file_stream->file = sceOpen(buffer, SCE_RDONLY);
+    file_stream->file = sceOpen(Ptr<String>(name)->data(), SCE_RDONLY);
   } else {
     // 0x602
-    file_stream->file = sceOpen(buffer, SCE_TRUNC | SCE_CREAT | SCE_WRONLY);
+    file_stream->file = sceOpen(Ptr<String>(name)->data(), SCE_TRUNC | SCE_CREAT | SCE_WRONLY);
   }
 
   return fs;

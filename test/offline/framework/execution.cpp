@@ -5,14 +5,15 @@
 #include "goalc/compiler/Compiler.h"
 #include "test/offline/config/config.h"
 
-#include "third-party/fmt/ranges.h"
+#include "fmt/ranges.h"
 
 // TODO - i think these should be partitioned by game name instead of it being in the filename
 // (and the names not being consistent)
 std::unordered_map<std::string, std::string> game_name_to_all_types = {
     {"jak1", "jak1/all-types.gc"},
     {"jak2", "jak2/all-types.gc"},
-    {"jak3", "jak3/all-types.gc"}};
+    {"jak3", "jak3/all-types.gc"},
+    {"jakx", "jakx/all-types.gc"}};
 
 void disassemble(OfflineTestDecompiler& dc) {
   dc.db->process_link_data(*dc.config);
