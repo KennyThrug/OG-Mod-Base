@@ -796,6 +796,13 @@
   (pad-x #x2002)
   (pad-square #x2003)
   ;; GAME-TEXT-ID ENUM ENDS
+  (glacier-level-name #x2100)
+  (glacier-buzzer #x2101)
+  (glacier-generator1 #x2102)
+  (glacier-generator2 #x2103)
+  (glacier-generator3 #x2104)
+  (glacier-ambush #x2105)
+  (glacier-eco-crystal #x2106)
   )
 
 ;; DECOMP BEGINS

@@ -449,7 +449,8 @@
   (when (not *weather-off*)
     (case (-> self current-level name)
       (('swamp) (update-rain self))
-      (('snow) (update-snow self))))
+      (('snow) (update-snow self))
+      (('glacier) (update-snow self))))
   (cond
     ((and (= (-> self control ground-pat material) (pat-material ice))
           (and (>= (-> self control unknown-float01) 204.8)

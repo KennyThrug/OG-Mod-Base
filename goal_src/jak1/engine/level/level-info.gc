@@ -2525,4 +2525,151 @@
        '()
        :wait-for-load #t))
 
+
+(define glacier
+  (new 'static
+       'level-load-info
+       :index 24
+       :name 'glacier
+       :visname 'glacier-vis
+       ;; name + -vis
+       :nickname 'gla
+       ;; nickname
+       :packages '(snow)
+       :sound-banks '(snow)
+       :music-bank 'snow
+       :ambient-sounds '()
+       :mood '*snow-mood*
+       :mood-func 'update-mood-snow
+       :ocean '*ocean-map-village1*
+       :sky #t
+       :sun-fade 1.0
+       :continues
+       '((new 'static
+             'continue-point
+             :name "glacier-start"
+             :level 'glacier
+             :trans
+             (new 'static 'vector :x 0.0 :y (meters 4.09) :z (meters 2000.) :w 1.0)
+             :quat
+             (new 'static 'quaternion :w 1.0)
+             :camera-trans
+             (new 'static 'vector :x 0.0 :y 4096.0 :z 0.0 :w 1.0)
+             :camera-rot
+             (new 'static 'array float 9 -0.9995 -0.0000 -0.0297 0.0043 0.9891 -0.1470 0.0294 -0.1471 -0.9886)
+             :load-commands
+             '()
+             :vis-nick 'gla
+             :lev0 'glacier
+             :disp0 'display
+             :lev1 #f
+             :disp1 #f)
+          (new 'static 'continue-point
+        :name "glacier-checkpoint1"
+        :level 'glacier
+        :trans (new 'static 'vector :x (meters 16.81) :y (meters 11.03) :z (meters 1723.87) :w 1.0) ;; 1018.36   3.41  -5.47 1369.66  55.94 -25.24
+        :quat (new 'static 'quaternion :x -0.1204 :y -0.1174 :z 0.6881 :w 0.7057)
+        :camera-trans (new 'static 'vector :x (meters 16.81) :y (meters 11.03) :z (meters 1723.87) :w 1.0)
+        :camera-rot
+             (new 'static 'array float 9 -0.9998 -0.0000 0.0170 -0.0020 0.9927 -0.1199 -0.0169 -0.1199 -0.9926)
+        :load-commands '()
+        :vis-nick 'gla
+        :lev0 'glacier
+        :disp0 'display
+        :lev1 #f
+        :disp1 #f
+        )
+        (new 'static 'continue-point
+        :name "glacier-checkpoint2"
+        :level 'glacier
+        :trans (new 'static 'vector :x (meters -107.00) :y (meters 26.77) :z (meters 1607.44) :w 1.0) ;; 1018.36   3.41  -5.47 1369.66  55.94 -25.24
+        :quat (new 'static 'quaternion :x -0.1204 :y -0.1174 :z 0.6881 :w 0.7057)
+        :camera-trans (new 'static 'vector :x (meters -107.00) :y (meters 26.77) :z (meters 1607.44) :w 1.0)
+        :camera-rot
+             (new 'static 'array float 9 -0.9995 0.0000 0.0306 -0.0037 0.9926 -0.1208 -0.0304 -0.1209 -0.9921)
+        :load-commands '()
+        :vis-nick 'gla
+        :lev0 'glacier
+        :disp0 'display
+        :lev1 #f
+        :disp1 #f
+        )
+        (new 'static 'continue-point
+        :name "glacier-checkpoint3"
+        :level 'glacier
+        :trans (new 'static 'vector :x (meters -13.32) :y (meters 11.22) :z (meters 1545.45) :w 1.0) ;; 1018.36   3.41  -5.47 1369.66  55.94 -25.24
+        :quat (new 'static 'quaternion :x -0.1204 :y -0.1174 :z 0.6881 :w 0.7057)
+        :camera-trans (new 'static 'vector :x (meters -13.32) :y (meters 11.22) :z (meters 1545.45) :w 1.0)
+        :camera-rot
+             (new 'static 'array float 9 0.1253 0.0000 -0.9921 0.1272 0.9917 0.0160 0.9839 -0.1282 0.1243)
+        :load-commands '()
+        :vis-nick 'gla
+        :lev0 'glacier
+        :disp0 'display
+        :lev1 #f
+        :disp1 #f
+        )
+        (new 'static 'continue-point
+        :name "glacier-checkpoint3.5"
+        :level 'glacier
+        :trans (new 'static 'vector :x (meters 15.88) :y (meters 11.05) :z (meters 1598.77) :w 1.0) ;; 1018.36   3.41  -5.47 1369.66  55.94 -25.24
+        :quat (new 'static 'quaternion :x -0.1204 :y -0.1174 :z 0.6881 :w 0.7057)
+        :camera-trans (new 'static 'vector :x (meters 15.88) :y (meters 11.05) :z (meters 1598.77) :w 1.0)
+        :camera-rot
+             (new 'static 'array float 9 -0.9999 0.0000 -0.0024 0.0003 0.9902 -0.1392 0.0024 -0.1392 -0.9902)
+        :load-commands '()
+        :vis-nick 'gla
+        :lev0 'glacier
+        :disp0 'display
+        :lev1 #f
+        :disp1 #f
+        )
+        (new 'static 'continue-point
+        :name "glacier-checkpoint4"
+        :level 'glacier
+        :trans (new 'static 'vector :x (meters 115.22) :y (meters 22.52) :z (meters 1580.05) :w 1.0) ;; 1018.36   3.41  -5.47 1369.66  55.94 -25.24
+        :quat (new 'static 'quaternion :x -0.1204 :y -0.1174 :z 0.6881 :w 0.7057)
+        :camera-trans (new 'static 'vector :x (meters 115.22) :y (meters 22.52) :z (meters 1580.05) :w 1.0)
+        :camera-rot
+             (new 'static 'array float 9 0.1253 0.0000 -0.9921 0.1272 0.9917 0.0160 0.9839 -0.1282 0.1243)
+        :load-commands '()
+        :vis-nick 'gla
+        :lev0 'glacier
+        :disp0 'display
+        :lev1 #f
+        :disp1 #f
+        )
+        (new 'static 'continue-point
+        :name "glacier-warp"
+        :level 'glacier
+        :flags (continue-flags warp)
+        :trans (new 'static 'vector :x (meters -5.51) :y (meters 4.07) :z (meters 2013) :w 1.0)
+        :quat (new 'static 'quaternion :x -0.1204 :y -0.1174 :z 0.6881 :w 0.7057)
+        :camera-trans (new 'static 'vector :x -559109.3 :y 200461.92 :z 826073.06 :w 1.0)
+        :camera-rot (new 'static 'array float 9 -0.9732 -0.0000 0.2296 -0.0492 0.9767 -0.2086 -0.2243 -0.2143 -0.9506)
+                                              :load-commands '()
+                                              :vis-nick 'gla
+                                              :lev0 'glacier
+                                              :disp0 'display
+                                              :lev1 #f
+                                              :disp1 #f
+                                              )
+                           
+        )
+       :tasks
+       '()
+       :priority 100
+       :load-commands
+       '()
+       :alt-load-commands
+       '()
+       :bsp-mask #xffffffffffffffff
+       :bsphere
+       (new 'static 'sphere :w 167772160000.0)
+       :bottom-height (meters -20)
+       :run-packages
+       '()
+       :wait-for-load #t))
+
+(cons! *level-load-list* 'glacier)
 (cons! *level-load-list* 'test-zone)

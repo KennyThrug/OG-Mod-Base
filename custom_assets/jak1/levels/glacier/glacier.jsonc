@@ -1,0 +1,3280 @@
+{
+  // The "in-game" name of the level. Should be lower case, with dashes (GOAL symbol name)
+  // the name of this file, and the folder this file is in must have the same name.
+  "long_name": "glacier",
+  // The file name, should be upper case and 8 characters or less.
+  "iso_name": "GLACIER",
+  // The nickname, should be exactly 3 characters
+  "nickname": "gla", // 3 char name, all lowercase
+  // Background mesh file.
+  // Must have vertex colors. Use the blender cycles renderer, bake, diffuse, uncheck color,
+  // and bake to vertex colors. For now, only the first vertex color group is used, so make sure you
+  // only have 1.
+  "gltf_file": "custom_assets/jak1/levels/glacier/glacier.glb",
+
+  // automatically set wall vs. ground based on angle. Useful if you don't want to assign this yourself
+  "automatic_wall_detection": true,
+  "automatic_wall_angle": 45.0,
+
+  // if your mesh has triangles with incorrect orientation, set this to make all collision mesh triangles double sided
+  // this makes collision 2x slower and bigger, so only use if really needed
+  "double_sided_collide": false,
+
+  // available res-lump tag types:
+  // integer types: int32, uint32, enum-int32, enum-uint32
+  // float types: float, meters (1 meter = 4096.0 units), degrees (65536.0 = 360°)
+  // vector types: vector (normal floats), vector4m (meters), vector3m (meters with w set to 1.0), vector-vol (normal floats with w in meters), movie-pos (meters with w in degrees)
+  // special types: symbol, type, string, eco-info, cell-info, buzzer-info, water-height
+  //
+  // examples:
+  //
+  // adds a float tag 'spring-height' with value of 200 meters (1 meter = 4096.0 units):
+  // "spring-height": ["meters", 200.0]
+  //
+  // adds a degrees tag 'rotoffset':
+  // "rotoffset": ["degrees", -45.0]
+  //
+  // adds a movie-pos tag:
+  // "movie-pos": ["movie-pos", [100.22, -25.3, 99.5, 180.0]]
+  //
+  // adds an enum tag 'options':
+  // "options": ["enum-int32", "(fact-options large)"]
+  //
+  // adds a water-height tag:
+  // "water-height": ["water-height", 25.0, 0.5, 2.0, "(water-flags wt08 wt03 wt01)"]
+  //
+  // adds an eco-info tag:
+  // "eco-info": ["eco-info", "(pickup-type health)", 2]
+  //
+  // adds a cell-info tag:
+  // "eco-info": ["cell-info", "(game-task training-gimmie)"]
+  //
+  // adds a buzzer-info tag:
+  // "eco-info": ["buzzer-info", "(game-task training-buzzer)", 5]
+  //
+  // adds a 'symbol' tag (using the 'type' and 'string' lump types works the same way):
+  // "symbol-list": ["symbol", "sym-1", "sym-2"]
+
+  // The base actor id for your custom level. If you have multiple levels, this should be unique!
+  "base_id": 45000,
+
+  // All art groups you want to use in your custom level. Will add their models and corresponding textures to the FR3 file.
+  // Note: You will still have to add them to your level's .gd file.
+  // "art_groups": ["plat-ag"],
+  "art_groups": ["babak-ag", "plat-ag", "plat-eco-ag", "citb-coil-ag", "citb-generator-ag", "citb-hose-ag", "citb-disc-ag", "citb-donut-ag", "water-anim-sunken-dark-eco-ag", "eggtop-ag", "bonelurker-ag", "mistycam-ag", "jng-iris-door-ag", "dark-crystal-ag"
+, "ecovalve-ag", "yeti-ag", "snow-bunny-ag", "puffer-ag", "sharkey-ag", "water-anim-sunken-ag", "warpgate-ag", "warp-gate-switch-ag", "swampcam-ag"],
+
+  // If you have any custom models in the "custom_assets/jak1/models/custom_levels" folder that you want to use in your level, add them to this list.
+  // Note: Like with art groups, these should also be added to your level's .gd file.
+  "custom_models": [],
+
+  // Any textures you want to include in your custom level. This is mainly useful for things such as the zoomer HUD,
+  // sky textures and cases where you want to use objects drawn with the generic renderer,
+  // which also requires you to set a texture remap table and a list of tpages.
+  // To get a list of all the textures, you can extract all of the game's textures
+  // by setting "save_texture_pngs" to true in the decompiler config.
+  // The format is ["tpage-name", "texture-name1", "texture-name2", ...].
+  // If you want all textures from a tpage, you can just do ["tpage-name"].
+  "textures": [
+    // Zoomer HUD textures
+    // ["zoomerhud"],
+    // Sandover sky textures
+    ["village1-vis-alpha"]
+  ],
+
+  // Which vanilla level's texture remap table to use.
+  // This is needed if you want to have proper textures for objects that are drawn using generic, such as
+  // dark eco pools or dying enemies. If you choose to use this,
+  // the order of art groups and tpages in your level's .gd MUST match the vanilla level's for the textures to work.
+  "tex_remap": "village1",
+
+  // Which sky to use for your custom level. This needs to be the name of a vanilla level with sky textures.
+  // Your level's mood update needs to be set up to copy the sky texture (update-mood-default already handles this as an example).
+  // You also need to add a specific tpage to your level .gd depending on the level you chose:
+  // training:   tpage-1308.go
+  // village1:   tpage-401.go
+  // beach:      tpage-215.go
+  // jungle:     tpage-388.go
+  // misty:      tpage-520.go
+  // firecanyon: tpage-1123.go
+  // village2:   tpage-921.go
+  // rolling:    tpage-925.go
+  // sunkenb:    tpage-162.go
+  // swamp:      tpage-630.go
+  // ogre:       tpage-1117.go
+  // village3:   tpage-1194.go
+  // snow:       tpage-712.go
+  // finalboss:  tpage-1418.go
+  // The tpage you choose also has to be in the alpha (4th) slot in the "tpages" list below.
+  "sky": "village1",
+
+  // Any texture pages that are added to the level's "texture-ids" array.
+  // These will be logged in and linked as part of level loading.
+  // There are five tpage categories, in this order:
+  // - tfrag
+  // - pris
+  // - shrub
+  // - alpha
+  // - water
+  // This is also (with the exception of levels that use the zoomer) the order that the tpages are listed in in the vanilla .gd files.
+  // You need to also add these to your level .gd as well.
+  // Sky textures use the alpha slot.
+  // If this is empty and "tex_remap" and "sky" are the same level, this will be auto-filled with the tpages from the
+  // corresponding level (check its .gd file for the art group/tpage order to copy over).
+  "tpages": [],
+
+  // Ambients you want to use in your custom level. Ambients can be used for various things like changing the music variation (flava),
+  // adding ambient sounds, level name hints, etc.
+  "ambients": [
+    {
+      "trans": [ -1.12, 4.07, 2004.60, 50.0 ],
+      "bsphere": [ -1.12, 4.07, 2004.60, 50.0 ],
+      "lump": {
+        "name": "ambient-wind-glacier2",
+        "type": "'sound",
+        "effect-name": "'wind-loop",
+        "effect-param": [ "float", 11.0, 30.0, 12.0, 50.0 ],
+        "cycle-speed": [ "float", -1.0, 0.0 ]
+      }
+    },
+    {
+      "trans": [ 7.69, 3.94, 1964.90, 50.0 ],
+      "bsphere": [ 7.69, 3.94, 1964.90, 50.0 ],
+      "lump": {
+        "name": "ambient-wind-glacier3",
+        "type": "'sound",
+        "effect-name": "'wind-loop",
+        "effect-param": [ "float", 11.0, 30.0, 12.0, 50.0 ],
+        "cycle-speed": [ "float", -1.0, 0.0 ]
+      }
+    },
+    {
+      "trans": [ -5.92, 3.81, 1946.42, 50.0 ],
+      "bsphere": [ -5.92, 3.81, 1946.42, 50.0 ],
+      "lump": {
+        "name": "ambient-wind-glacier4",
+        "type": "'sound",
+        "effect-name": "'wind-loop",
+        "effect-param": [ "float", 11.0, 30.0, 12.0, 50.0 ],
+        "cycle-speed": [ "float", -1.0, 0.0 ]
+      }
+    },
+    {
+      "trans": [ 7.15, 3.96, 1922.80, 50.0 ],
+      "bsphere": [ 7.15, 3.96, 1922.80, 50.0 ],
+      "lump": {
+        "name": "ambient-wind-glacier5",
+        "type": "'sound",
+        "effect-name": "'wind-loop",
+        "effect-param": [ "float", 11.0, 30.0, 12.0, 50.0 ],
+        "cycle-speed": [ "float", -1.0, 0.0 ]
+      }
+    },
+    {
+      "trans": [ 13.20, 7.23, 1899.51, 50.0 ],
+      "bsphere": [ 13.20, 7.23, 1899.51, 50.0 ],
+      "lump": {
+        "name": "ambient-wind-glacier6",
+        "type": "'sound",
+        "effect-name": "'wind-loop",
+        "effect-param": [ "float", 11.0, 30.0, 12.0, 50.0 ],
+        "cycle-speed": [ "float", -1.0, 0.0 ]
+      }
+    },
+    {
+      "trans": [ 23.81, 5.08, 1870.86, 50.0 ],
+      "bsphere": [ 23.81, 5.08, 1870.86, 50.0 ],
+      "lump": {
+        "name": "ambient-wind-glacier7",
+        "type": "'sound",
+        "effect-name": "'wind-loop",
+        "effect-param": [ "float", 11.0, 30.0, 12.0, 50.0 ],
+        "cycle-speed": [ "float", -1.0, 0.0 ]
+      }
+    },
+    {
+      "trans": [ 18.51, 2.04, 1786.80, 50.0 ],
+      "bsphere": [ 18.51, 2.04, 1786.80, 50.0 ],
+      "lump": {
+        "name": "ambient-wind-glacier8",
+        "type": "'sound",
+        "effect-name": "'wind-loop",
+        "effect-param": [ "float", 11.0, 30.0, 12.0, 50.0 ],
+        "cycle-speed": [ "float", -1.0, 0.0 ]
+      }
+    },
+    {
+      "trans": [ -55.40, 17.70, 1700.09, 50.0 ],
+      "bsphere": [ -55.40, 17.70, 1700.09, 50.0 ],
+      "lump": {
+        "name": "ambient-wind-glacier9",
+        "type": "'sound",
+        "effect-name": "'wind-loop",
+        "effect-param": [ "float", 11.0, 30.0, 12.0, 50.0 ],
+        "cycle-speed": [ "float", -1.0, 0.0 ]
+      }
+    },
+    {
+      "trans": [ -107.81, 20.56, 1568.15, 50.0 ],
+      "bsphere": [ -107.81, 20.56, 1568.15, 50.0 ],
+      "lump": {
+        "name": "ambient-wind-glacier10",
+        "type": "'sound",
+        "effect-name": "'wind-loop",
+        "effect-param": [ "float", 11.0, 30.0, 12.0, 50.0 ],
+        "cycle-speed": [ "float", -1.0, 0.0 ]
+      }
+    },
+    {
+      "trans": [ 21.29, 8.40, 1485.75, 50.0 ],
+      "bsphere": [ 21.29, 8.40, 1485.75, 50.0 ],
+      "lump": {
+        "name": "ambient-wind-glacier11",
+        "type": "'sound",
+        "effect-name": "'wind-loop",
+        "effect-param": [ "float", 11.0, 30.0, 12.0, 50.0 ],
+        "cycle-speed": [ "float", -1.0, 0.0 ]
+      }
+    },
+    {
+      "trans": [ 76.24, 26.51, 1422.72, 50.0 ],
+      "bsphere": [ 76.24, 26.51, 1422.72, 50.0 ],
+      "lump": {
+        "name": "ambient-wind-glacier12",
+        "type": "'sound",
+        "effect-name": "'wind-loop",
+        "effect-param": [ "float", 11.0, 30.0, 12.0, 50.0 ],
+        "cycle-speed": [ "float", -1.0, 0.0 ]
+      }
+    },
+    {
+      "trans": [ 77.99, 22.78, 1467.43, 50.0 ],
+      "bsphere": [ 77.99, 22.78, 1467.43, 50.0 ],
+      "lump": {
+        "name": "ambient-wind-glacier13",
+        "type": "'sound",
+        "effect-name": "'wind-loop",
+        "effect-param": [ "float", 11.0, 30.0, 12.0, 50.0 ],
+        "cycle-speed": [ "float", -1.0, 0.0 ]
+      }
+    },
+    {
+      "trans": [ 91.03, 17.04, 1573.99, 50.0 ],
+      "bsphere": [ 91.03, 17.04, 1573.99, 50.0 ],
+      "lump": {
+        "name": "ambient-wind-glacier14",
+        "type": "'sound",
+        "effect-name": "'wind-loop",
+        "effect-param": [ "float", 11.0, 30.0, 12.0, 50.0 ],
+        "cycle-speed": [ "float", -1.0, 0.0 ]
+      }
+    },
+    {
+      "trans": [ 127.24, 22.90, 1585.89, 50.0 ],
+      "bsphere": [ 127.24, 22.90, 1585.89, 50.0 ],
+      "lump": {
+        "name": "ambient-wind-glacier15",
+        "type": "'sound",
+        "effect-name": "'wind-loop",
+        "effect-param": [ "float", 11.0, 30.0, 12.0, 50.0 ],
+        "cycle-speed": [ "float", -1.0, 0.0 ]
+      }
+    }
+    
+  ],
+
+  "actors": [
+
+    /////////////////AMBIENT/////////////////
+    {
+      "trans": [ 60.67,  56.17, 1696.95],
+      "etype": "misty-part",
+      "game_task": 0,
+      "quat": [ 0, -0.425, 0, 0.905 ], // quaternion
+      "bsphere": [ 669.78, 8.54, 613.28, 50 ], // bounding sphere
+      "lump": {
+        "art-name": "group-misty-lurkermachine-vent-2",
+        "name": "glacier-smoke-part-1"
+        }
+      },
+      
+      {
+      "trans": [ -126.86,  44.70 ,1459.63],
+      "etype": "misty-part",
+      "game_task": 0,
+      "quat": [ 0, -0.425, 0, 0.905 ], // quaternion
+      "bsphere": [ 669.78, 8.54, 613.28, 50 ], // bounding sphere
+      "lump": {
+        "art-name": "group-misty-lurkermachine-vent-2",
+        "name": "glacier-smoke-part-1"
+       }
+      },
+      
+      {
+      "trans": [ 23.90,  59.41, 1401.21],
+      "etype": "misty-part",
+      "game_task": 0,
+      "quat": [ 0, -0.425, 0, 0.905 ], // quaternion
+      "bsphere": [ 669.78, 8.54, 613.28, 50 ], // bounding sphere
+      "lump": {
+        "art-name": "group-misty-lurkermachine-vent-2",
+        "name": "glacier-smoke-part-1"
+        }
+      },
+
+      {
+        "trans": [ 20.11, 43.50, 1566.62],
+        "etype": "snow-part",
+        "game_task": 0,
+        "quat": [ 0, -0.425, 0, 0.905 ], // quaternion
+        "bsphere": [ 669.78, 8.54, 613.28, 50 ], // bounding sphere
+        "lump": {
+          "art-name": "group-snow-birds",
+          "name": "glacier-birds-part-1"
+         }
+        },
+        {
+          "trans": [17.77, 24.63, 1724.12],
+          "etype": "snow-part",
+          "game_task": 0,
+          "quat": [0,0,0,1],
+          "bsphere": [17.77, 24.63, 1724.12, 50],
+          "lump": {
+            "art-name": "group-snow-snowdrops5",
+            "name": "glacier-snowdrops-part-2"
+          }
+        },
+        {
+          "trans": [-64.80, 38.55, 1677.80],
+          "etype": "snow-part",
+          "game_task": 0,
+          "quat": [0,0,0,1],
+          "bsphere": [-64.80, 38.55, 1677.80, 50],
+          "lump": {
+            "art-name": "group-snow-snowdrops5",
+            "name": "glacier-snowdrops-part-3"
+          }
+        },
+        {
+          "trans": [-110.84, 45.62, 1593.80],
+          "etype": "snow-part",
+          "game_task": 0,
+          "quat": [0,0,0,1],
+          "bsphere": [-110.84, 45.62, 1593.80, 50],
+          "lump": {
+            "art-name": "group-snow-snowdrops5",
+            "name": "glacier-snowdrops-part-4"
+          }
+        },
+        {
+          "trans": [-73.26, 32.18, 1475.78],
+          "etype": "snow-part",
+          "game_task": 0,
+          "quat": [0,0,0,1],
+          "bsphere": [-73.26, 32.18, 1475.78, 50],
+          "lump": {
+            "art-name": "group-snow-snowdrops5",
+            "name": "glacier-snowdrops-part-5"
+          }
+        },
+        {
+          "trans": [22.40, 30.72, 1524.60],
+          "etype": "snow-part",
+          "game_task": 0,
+          "quat": [0,0,0,1],
+          "bsphere": [22.40, 30.72, 1524.60, 50],
+          "lump": {
+            "art-name": "group-snow-snowdrops5",
+            "name": "glacier-snowdrops-part-6"
+          }
+        },
+        {
+          "trans": [53.68, 24.08, 1559.59],
+          "etype": "snow-part",
+          "game_task": 0,
+          "quat": [0,0,0,1],
+          "bsphere": [53.68, 24.08, 1559.59, 50],
+          "lump": {
+            "art-name": "group-snow-snowdrops5",
+            "name": "glacier-snowdrops-part-7"
+          }
+        },
+        {
+          "trans": [140.29, 38.49, 1618.11],
+          "etype": "snow-part",
+          "game_task": 0,
+          "quat": [0,0,0,1],
+          "bsphere": [140.29, 38.49, 1618.11, 50],
+          "lump": {
+            "art-name": "group-snow-snowdrops5",
+            "name": "glacier-snowdrops-part-8"
+          }
+        },
+        {
+          "trans": [53.06, 42.70, 1417.30],
+          "etype": "snow-part",
+          "game_task": 0,
+          "quat": [0,0,0,1],
+          "bsphere": [53.06, 42.70, 1417.30, 50],
+          "lump": {
+            "art-name": "group-snow-snowdrops5",
+            "name": "glacier-snowdrops-part-9"
+          }
+        },
+    {
+      "trans": [-126, 27.5, 1459.42], // translation
+      "etype": "citb-coil", // actor type
+      "game_task": "(game-task glacier-generator1)", // associated game task (for powercells, etc)
+      "quat": [0, 0, 0, 1], // quaternion
+      "bsphere": [-130, 27, 158.42, 10], // bounding sphere
+      "lump": {
+        "name": "glacier-coil1"
+      }
+    },
+
+    {
+      "trans": [-121, 26.8, 1454.42], // translation
+      "etype": "citb-generator", // actor type
+      "game_task": "(game-task glacier-generator1)", // associated game task (for powercells, etc)
+      "quat": [0, 0, 0, 1], // quaternion
+      "bsphere": [-130, 27, 158.42, 10], // bounding sphere
+      "lump": {
+        "name": "glacier-generator1",
+        "alt-actor": [ "string", 
+      "glacier-hose1",
+      "glacier-coil1"],
+      "movie-pos": ["movie-pos", [-104.79, 21.01, 1450.97, 11.3689]]
+      }
+    },
+
+    {
+      "trans": [-133, 18, 1481.42], // translation
+      "etype": "citb-hose", // actor type
+      "game_task": "(game-task glacier-generator1)", // associated game task (for powercells, etc)
+      "quat": [0.0000, -0.7048, 0.0000, -0.7093], // quaternion
+      "bsphere": [-130, 25, 158.42, 10], // bounding sphere
+      "lump": {
+        "name": "glacier-hose1"
+      }
+    },
+
+    {
+      "trans": [23, 41.35, 1400.42], // translation
+      "etype": "citb-coil", // actor type
+      "game_task": "(game-task glacier-generator2)", // associated game task (for powercells, etc)
+      "quat": [0, 0, 0, 1], // quaternion
+      "bsphere": [-23, 42.75, 1429.42, 10], // bounding sphere
+      "lump": {
+        "name": "glacier-coil2"
+      }
+    },
+
+    {
+      "trans": [28.823, 40.4, 1405.42], // translation
+      "etype": "citb-generator", // actor type
+      "game_task": "(game-task glacier-generator2)", // associated game task (for powercells, etc)
+      "quat": [0, 0, 0, 1], // quaternion
+      "bsphere": [-23.223, 40.8, 1435.42, 10], // bounding sphere
+      "lump": {
+        "name": "glacier-generator2",
+        "alt-actor": [ "string", 
+      "glacier-hose2",
+      "glacier-coil2"],
+      "movie-pos": ["movie-pos", [24.77, 32.35, 1425.24, 4.5330]]
+      }
+    },
+
+    {
+      "trans": [23.4, 28, 1413.42], // translation
+      "etype": "citb-hose", // actor type
+      "game_task": "(game-task glacier-generator2)", // associated game task (for powercells, etc)
+      "quat": [0, 0, 0, 1], // quaternion
+      "bsphere": [-130, 25, 158.42, 10], // bounding sphere
+      "lump": {
+        "name": "glacier-hose2"
+      }
+    },
+
+    {
+      "trans": [60.508, 38.424, 1698.0], // translation
+      "etype": "citb-coil", // actor type
+      "game_task": "(game-task glacier-generator3)", // associated game task (for powercells, etc)
+      "quat": [0, 0, 0, 1], // quaternion
+      "bsphere": [-23, 42.75, 1429.42, 10], // bounding sphere
+      "lump": {
+        "name": "glacier-coil3"
+      }
+    },
+
+    {
+      "trans": [61.559, 38.58, 1707.9], // translation
+      "etype": "citb-generator", // actor type
+      "game_task": "(game-task glacier-generator3)", // associated game task (for powercells, etc)
+      "quat": [0, 0, 0, 1], // quaternion
+      "bsphere": [-23.223, 40.8, 1435.42, 10], // bounding sphere
+      "lump": {
+        "name": "glacier-generator3",
+        "alt-actor": [ "string", 
+      "glacier-hose3",
+      "glacier-coil3"],
+      "movie-pos": ["movie-pos", [70.31, 37.31, 1696.41, 78.8370]]
+      }
+    },
+
+    {
+      "trans": [116.63, 25.3, 1666.7], // translation
+      "etype": "citb-hose", // actor type
+      "game_task": "(game-task glacier-generator3)", // associated game task (for powercells, etc)
+      "quat": [0.0000, -0.4841, 0.0000, -0.8750], // quaternion
+      "bsphere": [-130, 25, 158.42, 10], // bounding sphere
+      "lump": {
+        "name": "glacier-hose3"
+      }
+    },
+
+    {
+      "trans": [-131, 19.38, 1472.62],
+      "etype": "water-anim",
+      "game_task": 0,
+      "quat" : [0.0, 0.0, -0.0, 1.0],
+      "bsphere": [48.77, -0.08, -112.62, 10],
+      "lump": {
+        "name":"WaterShape-13",
+        "scale": ["float", 1.0],
+        "look": ["int32", 13]
+      }
+    },
+
+    {
+      "trans": [-1311, 19.3860, -1472.62],
+      "etype": "dark-eco-pool",
+      "game_task": 0,
+      "quat" : [0.0, 0.0, -0.0, 1.0],
+      "bsphere": [48.77, -0.08, -112.62, 10],
+      "lump": {
+        "name":"WaterShape-13-ecopooldeadly",
+        "scale": ["float", 1.0],
+        "look": ["int32", 13],
+        "vol": ["vector-vol",
+    [-1.000, 0.000, -0.000, 139.775],
+    [0.000, 0.000, -1.000, -1466.802],
+    [1.000, 0.000, -0.000, -121.170],
+    [0.000, 0.000, 1.000, 1493.672],
+    [0.000, -1.000, -0.000, -15.077],
+    [0.000, 1.000, -0.000, 19.346]
+  ]
+,
+  "water-height": ["float",
+        19.3860, // Dark Eco Water Height
+        2048, // Wade Height 
+        8192, // Swim Height
+        1572872.0 // Flags
+  ]
+      }
+    },
+
+    {
+      "trans": [23.3, 31, 1410.62],
+      "etype": "water-anim",
+      "game_task": 0,
+      "quat" : [0.0, 0.0, -0.0, 1.0],
+      "bsphere": [48.77, -0.08, -112.62, 10],
+      "lump": {
+        "name":"WaterShape-13-second",
+        "scale": ["float", 1.0],
+        "look": ["int32", 13]
+      }
+    },
+
+    {
+      "trans": [-1123.3, 31, -1410.62],
+      "etype": "dark-eco-pool",
+      "game_task": 0,
+      "quat" : [0.0, 0.0, -0.0, 1.0],
+      "bsphere": [48.77, -0.08, -112.62, 10],
+      "lump": {
+        "name":"WaterShape-13-ecopooldeadly2",
+        "scale": ["float", 1.0],
+        "look": ["int32", 13],
+        "vol": ["vector-vol",
+    [-1.000, 0.000, -0.000, -7.451],
+    [0.000, 0.000, -1.000, -1401.979],
+    [1.000, 0.000, -0.000, 39.491],
+    [0.000, 0.000, 1.000, 1427.298],
+    [0.000, -1.000, -0.000, -25.346],
+    [0.000, 1.000, -0.000, 31.083]
+  ],
+  "water-height": ["float",
+        31, // Dark Eco Water Height
+        2048, // Wade Height 
+        8192, // Swim Height
+        1572872.0 // Flags
+  ]
+      }},
+    
+
+    {
+      "trans": [144.3, 25.7, 1673.62],
+      "etype": "water-anim",
+      "game_task": 0,
+      "quat" : [0.0, 0.0, -0.0, 1.0],
+      "bsphere": [48.77, -0.08, -112.62, 10],
+      "lump": {
+        "name":"WaterShape-13-third",
+        "scale": ["float", 2.0],
+        "look": ["int32", 13]
+      }
+    },
+    {
+      "trans": [-1144.3, 25.7, -1673.62],
+      "etype": "dark-eco-pool",
+      "game_task": 0,
+      "quat" : [0.0, 0.0, -0.0, 1.0],
+      "bsphere": [48.77, -0.08, -112.62, 10],
+      "lump": {
+        "name":"WaterShape-13-ecopooldeadly3",
+        "scale": ["float", 1.0],
+        "look": ["int32", 13],
+        "vol": ["vector-vol",
+    [-0.805, 0.000, -0.593, -1076.159],
+    [0.542, 0.000, -0.840, -1313.016],
+    [0.805, 0.000, 0.593, 1143.605],
+    [-0.542, 0.000, 0.840, 1354.088],
+    [0.000, -1.000, -0.000, -20.044],
+    [0.000, 1.000, -0.000, 25.781]
+  ],
+  "water-height": ["float",
+        25.7, // Dark Eco Water Height
+        2048, // Wade Height 
+        8192, // Swim Height
+        1572872.0 // Flags
+  ]
+      }},
+
+
+    {
+      "trans": [19.742, 23, 1555.4],
+      "etype": "eggtop-red",
+      "game_task": "(game-task red-eggtop)",
+      "quat" : [0.0, 0.0, -0.0, 1.0],
+      "bsphere": [48.77, -0.08, -112.62, 10],
+      "lump": {
+        "name":"eggtop",
+        "movie-pos": ["movie-pos", [19.719, 23, 1555.52, 1.255]],
+        "movie-mask": ["int32", 495]
+      }
+    },
+
+    {
+      "trans": [ 21, 11.98, 1482.6 ],
+      "etype": "launcher",
+      "game_task": 0,
+      "quat": [ 0, 0, 0, 1 ],
+      "bsphere": [ 1684.97, 47.98, -44.10, 10 ],
+      "lump": {
+        "name": "glacier-launcher-1",
+        "spring-height": [ "meters", 50.0 ],
+        "vis-dist": [ "meters", 200.0 ]
+      }
+    },
+
+    {
+      "trans": [ 21, 11.3, 1482.6 ], // translation
+      "etype": "eco-blue", // actor type
+      "game_task": "(game-task none)", // associated game task (for powercells, etc)
+      "quat": [ 0, 0, 0, 1 ], // quaternion
+      "bsphere": [ 19.273, 12.98, -1555.1, 10 ], // bounding sphere
+      "lump": {
+        "name": "glacier-eco-blue1"
+      }
+    },
+
+    {
+      "aid": 50000,
+      "trans": [ 175.64, 24.3, 1500.6 ], // translation
+      "etype": "glacier-battlecontroller", // actor type
+      "game_task": "(game-task glacier-ambush)", // associated game task (for powercells, etc)
+      "quat": [ 0, 0, 0, 1 ], // quaternion
+      "bsphere": [ 175.64, 24.3, 1500.6, 10 ], // bounding sphere
+      "lump": {
+        "name": "glacier-battle",
+        "path": ["vector3m", // I am pretty sure game will crash if there is no path for an enemy. So just add one. You can use "path-actor" if you want to use another actor's path.
+            [175.64, 24.3, 1500.6],
+            [175.64, 24.3, 1490.6],
+            [175.64, 24.3, 1480.6],
+            [175.64, 24.3, 1480.6]
+        ],
+        
+          "patha": ["vector3m",
+            [129.42, 30.36, 1518.91],
+            [132.72, 33.21, 1517.38],
+            [144.85, 24.32, 1511.99]
+          ],
+          "pathb": ["vector3m",
+            [149.75, 29.21, 1456.09],
+            [152.13, 33.23, 1460.01],
+            [158.91, 24.32, 1470.77]
+          ],
+          "pathc": ["vector3m",
+            [172.10, 29.75, 1450.67],
+            [172.19, 33.23, 1454.26],
+            [173.18, 24.32, 1466.85]
+          ],
+          "pathd": ["vector3m",
+            [218.20, 30.65, 1476.16],
+            [216.26, 33.25, 1477.29],
+            [204.51, 24.32, 1482.68]
+          ],
+          "pathe": ["vector3m",
+            [225.81, 26.51, 1485.58],
+            [220.18, 33.24, 1486.76],
+            [211.05, 24.32, 1489.15]
+          ],
+          "pathf": ["vector3m",
+            [225.14, 24.15, 1498.29],
+            [222.05, 33.37, 1498.51],
+            [210.44, 24.32, 1498.71]
+          ],
+          "pathg": ["vector3m",
+            [202.34, 28.73, 1542.06],
+            [200.47, 33.18, 1540.29],
+            [193.81, 24.32, 1528.24]
+          ],
+          "pathh": ["vector3m",
+            [190.54, 26.39, 1549.91],
+            [188.91, 33.20, 1543.51],
+            [186.08, 24.32, 1530.93]
+          ]
+        ,        
+        "lurker-type": [ "type",
+        "babak",
+        "bonelurker"
+        ],
+        "num-lurkers": ["int32", 15, 100],
+        "percent": ["float", 0.75, 0.25],
+        "eco-info": ["int32", 9, 2],
+        "pickup-percent": ["float",
+        0.1
+        ],
+        "pickup-type": ["int32", 4],
+        "max-pickup-count": ["int32", 20, 20],
+        "final-pickup": ["int32", 6, 1],
+        "play-mode": "'sidekick",
+        "sound-name": "sksp0069",
+        "text-id": ["int32", 675],
+        "alt-actor": ["string", "glacier-door"],
+        "trigger-actor": ["string", "glacier-door"],
+        "movie-pos": ["movie-pos", [176.06, 24.00, 1499.9, 1.255]]
+    }},
+
+    {
+      "aid": 50001,
+      "trans": [ 154.53, 30.874, 1539.8 ], // translation
+      "etype": "glacier-iris-door", // actor type
+      "game_task": "(game-task none)", // associated game task (for powercells, etc)
+      "quat": [ 0.0000, 0.9700, 0.0000, 0.2404 ], // quaternion
+      "bsphere": [ 19.273, 12.98, -1555.1, 10 ], // bounding sphere
+      "lump": {
+        "name": "glacier-door",
+        "scale": ["float", 1.3]
+      }
+    },
+
+    ////////////////MONEY///////////////
+    {
+      // Y reduced by 2
+      "trans": [11.07,9.11,1903.25],
+      "etype": "money",
+      "game_task": "(game-task none)",
+      "quat": [0,0,0,1],
+      "bsphere": [27.23,11.96,1859.53,10],
+      "lump": {"name": "glacier-money-10"}
+    },
+    {
+      // Y reduced by 2
+      "trans": [14.63, 9.16, 1897.43],
+      "etype": "money",
+      "game_task": "(game-task none)",
+      "quat": [0,0,0,1],
+      "bsphere": [27.23,11.96,1859.53,10],
+      "lump": {"name": "glacier-money-11"}
+    },
+    {
+      // Y reduced by 2
+      "trans": [16.65, 8.23, 1890.73],
+      "etype": "money",
+      "game_task": "(game-task none)",
+      "quat": [0,0,0,1],
+      "bsphere": [27.23,11.96,1859.53,10],
+      "lump": {"name": "glacier-money-12"}
+    },
+      {
+        // Y reduced by 2
+        "trans": [27.23,11.96,1859.53],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [27.23,11.96,1859.53,10],
+        "lump": {"name": "glacier-money-13"}
+      },
+      {
+        // Y reduced by 2
+        "trans": [28.64,8.55,1855.41],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [28.64,8.55,1855.41,10],
+        "lump": {"name": "glacier-money-14"}
+      },
+      {
+        // Y reduced by 2
+        "trans": [29.29, 3.58,1853.63],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [29.29,2.58,1853.63,10],
+        "lump": {"name": "glacier-money-15"}
+      },
+      {
+        "trans": [30.95,3.90,1813.86],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [30.95,3.90,1813.86,10],
+        "lump": {"name": "glacier-money-16"}
+      },
+      {
+        "trans": [31.64,4.07,1806.72],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [31.64,4.07,1806.72,10],
+        "lump": {"name": "glacier-money-17"}
+      },
+      {
+        "trans": [27.77,5.24,1798.66],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [27.77,5.24,1798.66,10],
+        "lump": {"name": "glacier-money-18"}
+      },
+      {
+        "trans": [17.31,5.13,1750.79],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [17.31,5.13,1750.79,10],
+        "lump": {"name": "glacier-money-22"}
+      },
+      {
+       
+        "trans": [17.04,8.38,1741.28],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [17.04,8.38,1741.28,10],
+        "lump": {"name": "glacier-money-23"}
+      },
+      {
+        "trans": [16.94,10.49,1734.56],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [16.94,10.49,1734.56,10],
+        "lump": {"name": "glacier-money-24"}
+      },
+      {
+        "trans": [-28.26,14.88,1700.67],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-28.26,14.88,1700.67,10],
+        "lump": {"name": "glacier-money-25"}
+      },
+      {
+        "trans": [-37.32,15.38,1702.23],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-37.32,15.38,1702.23,10],
+        "lump": {"name": "glacier-money-26"}
+      },
+      {
+        "trans": [-45.00,18.80,1701.35],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-45.00,18.80,1701.35,10],
+        "lump": {"name": "glacier-money-27"}
+      },
+      {
+        "trans": [-52.03,19.27,1701.26],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-52.03,19.27,1701.26,10],
+        "lump": {"name": "glacier-money-28"}
+      },
+      {
+        "trans": [-60.14,19.97,1698.54],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-60.14,19.97,1698.54,10],
+        "lump": {"name": "glacier-money-29"}
+      },
+      {
+        "trans": [-64.90,26.50,1686.92],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-64.90,26.50,1686.92,10],
+        "lump": {"name": "glacier-money-30"}
+      },
+      {
+        "trans": [-68.12,31.56,1658.15],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-68.12,31.56,1658.15,10],
+        "lump": {"name": "glacier-money-31"}
+      },
+      {
+        "trans": [-67.97,31.61,1647.98],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-67.97,31.61,1647.98,10],
+        "lump": {"name": "glacier-money-32"}
+      },
+      {
+        "trans": [-77.85,31.63,1638.48],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-77.85,31.63,1638.48,10],
+        "lump": {"name": "glacier-money-33"}
+      },
+      {
+        "trans": [-91.24,29.71,1635.74],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-91.24,29.71,1635.74,10],
+        "lump": {"name": "glacier-money-34"}
+      },
+      {
+        "trans": [-109.73,33.62,1633.03],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-109.73,33.62,1633.03,10],
+        "lump": {"name": "glacier-money-35"}
+      },
+      {
+        // Y reduced by 2
+        "trans": [-108.08,37.30,1628.11],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-108.08,37.30,1628.11,10],
+        "lump": {"name": "glacier-money-36"}
+      },
+      {
+        "trans": [-103.75,35.18,1620.74],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-103.75,35.18,1620.74,10],
+        "lump": {"name": "glacier-money-37"}
+      },
+      {
+        // Y reduced by 2
+        "trans": [-99.26,38.08,1618.28],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-99.26,38.08,1618.28,10],
+        "lump": {"name": "glacier-money-38"}
+      },
+      {
+        "trans": [-93.28,37.30,1615.30],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-93.28,37.30,1615.30,10],
+        "lump": {"name": "glacier-money-39"}
+      },
+      // money-40 deleted
+      // money-41 deleted
+      // money-42 deleted
+      {
+        "trans": [-108.32,27.48,1587.23],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-108.32,27.48,1587.23,10],
+        "lump": {"name": "glacier-money-45"}
+      },
+      {
+        "trans": [-108.35,24.84,1577.08],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-108.35,24.84,1577.08,10],
+        "lump": {"name": "glacier-money-46"}
+      },
+      {
+        "trans": [-108.29,21.70,1564.22],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-108.29,21.70,1564.22,10],
+        "lump": {"name": "glacier-money-47"}
+      },
+      {
+        "trans": [-108.02,24.67,1555.73],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-108.02,24.67,1555.73,10],
+        "lump": {"name": "glacier-money-48"}
+      },
+      // money-49 removed
+      // money-50 removed
+      // money-51 removed
+      {
+        "trans": [-118.41,19.76,1508.16],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-118.41,19.76,1508.16,10],
+        "lump": {"name": "glacier-money-52"}
+      },
+      {
+        "trans": [-115.20,21.36,1494.45],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-115.20,21.36,1494.45,10],
+        "lump": {"name": "glacier-money-53"}
+      },
+      {
+        "trans": [-111.79, 22.84, 1478.59],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-115.20,21.36,1494.45,10],
+        "lump": {"name": "glacier-money-54"}
+      },
+      {
+        "trans": [-97.50,21.56,1476.51],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-97.50,21.56,1476.51,10],
+        "lump": {"name": "glacier-money-55"}
+      },
+      {
+        "trans": [-87.52,21.75,1475.22],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-87.52,21.75,1475.22,10],
+        "lump": {"name": "glacier-money-56"}
+      },
+      {
+        "trans": [-77.28,22.04,1476.18],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-77.28,22.04,1476.18,10],
+        "lump": {"name": "glacier-money-57"}
+      },
+      {
+        "trans": [-101.79,23.80,1437.42],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-101.79,23.80,1437.42,10],
+        "lump": {"name": "glacier-money-58"}
+      },
+      {
+        "trans": [-100.75,24.64,1431.06],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-100.75,24.64,1431.06,10],
+        "lump": {"name": "glacier-money-59"}
+      },
+      {
+        "trans": [-99.47,28.66,1422.55],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-99.47,28.66,1422.55,10],
+        "lump": {"name": "glacier-money-60"}
+      },
+      {
+        "trans": [-106.25,30.85,1420.78],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-106.25,30.85,1420.78,10],
+        "lump": {"name": "glacier-money-61"}
+      },
+      {
+        "trans": [-54.46,19.12,1489.72],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-54.46,19.12,1489.72,10],
+        "lump": {"name": "glacier-money-62"}
+      },
+      {
+        "trans": [-46.43,17.30,1506.32],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-46.43,17.30,1506.32,10],
+        "lump": {"name": "glacier-money-63"}
+      },
+      {
+        "trans": [-37.23,15.05,1526.45],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-37.23,15.05,1526.45,10],
+        "lump": {"name": "glacier-money-64"}
+      },
+      {
+        "trans": [-26.43,13.18,1541.67],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [-26.43,13.18,1541.67,10],
+        "lump": {"name": "glacier-money-65"}
+      },
+      {
+        "trans": [14.14,11.19,1645.75],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [14.14,11.19,1645.75,10],
+        "lump": {"name": "glacier-money-66"}
+      },
+      {
+        "trans": [14.52,16.39,1634.74],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [14.52,16.39,1634.74,10],
+        "lump": {"name": "glacier-money-67"}
+      },
+      {
+        "trans": [14.32,13.11,1620.18],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [14.32,13.11,1620.18,10],
+        "lump": {"name": "glacier-money-68"}
+      },
+      {
+        "trans": [2.88,18.08,1561.95],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [2.88,18.08,1561.95,10],
+        "lump": {"name": "glacier-money-69"}
+      },
+      {
+        "trans": [5.80,20.79,1556.78],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [5.80,20.79,1556.78,10],
+        "lump": {"name": "glacier-money-70"}
+      },
+      {
+        "trans": [10.90,23.02,1554.21],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [10.90,23.02,1554.21,10],
+        "lump": {"name": "glacier-money-71"}
+      },
+      {
+        "trans": [24.31,17.13,1536.79],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [24.31,17.13,1536.79,10],
+        "lump": {"name": "glacier-money-72"}
+      },
+      {
+        "trans": [18.84,20.10,1540.11],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [18.84,20.10,1540.11,10],
+        "lump": {"name": "glacier-money-73"}
+      },
+      {
+        "trans": [17.14,23.07,1546.88],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [17.14,23.07,1546.88,10],
+        "lump": {"name": "glacier-money-74"}
+      },
+      {
+        "trans": [36.89,16.43,1545.60],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [36.89,16.43,1545.60,10],
+        "lump": {"name": "glacier-money-75"}
+      },
+      {
+        "trans": [35.37,19.84,1552.67],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [35.37,19.84,1552.67,10],
+        "lump": {"name": "glacier-money-76"}
+      },
+      {
+        "trans": [28.40,23.15,1556.64],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [28.40,23.15,1556.64,10],
+        "lump": {"name": "glacier-money-77"}
+      },
+      {
+        "trans": [14.79,16.77,1574.69],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [14.79,16.77,1574.69,10],
+        "lump": {"name": "glacier-money-78"}
+      },
+      {
+        "trans": [21.48,20.31,1570.81],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [21.48,20.31,1570.81,10],
+        "lump": {"name": "glacier-money-79"}
+      },
+      {
+        "trans": [22.63,23.24,1563.55],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [22.63,23.24,1563.55,10],
+        "lump": {"name": "glacier-money-80"}
+      },
+      {
+        "trans": [24.07,11.20,1504.39],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [24.07,11.20,1504.39,10],
+        "lump": {"name": "glacier-money-81"}
+      },
+      {
+        // Y reduced by 2
+        "trans": [22.64,14.53,1494.58],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [22.64,14.53,1494.58,10],
+        "lump": {"name": "glacier-money-82"}
+      },
+      {
+        "trans": [25.35,11.90,1510.51],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [25.35,11.90,1510.51,10],
+        "lump": {"name": "glacier-money-83"}
+      },
+      {
+        "trans": [2.76,37.95,1410.22],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [2.76,37.95,1410.22,10],
+        "lump": {"name": "glacier-money-84"}
+      },
+      {
+        "trans": [8.57,39.56,1401.83],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [8.57,39.56,1401.83,10],
+        "lump": {"name": "glacier-money-85"}
+      },
+      {
+        "trans": [16.97,42.69,1395.30],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [16.97,42.69,1395.30,10],
+        "lump": {"name": "glacier-money-86"}
+      },
+      {
+        "trans": [29.03,42.27,1393.22],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [29.03,42.27,1393.22,10],
+        "lump": {"name": "glacier-money-87"}
+      },
+      {
+        "trans": [41.11,38.65,1400.28],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [41.11,38.65,1400.28,10],
+        "lump": {"name": "glacier-money-88"}
+      },
+      {
+        "trans": [46.59,36.23,1409.03],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [46.59,36.23,1409.03,10],
+        "lump": {"name": "glacier-money-89"}
+      },
+      {
+        "trans": [74.37,28.70,1421.92],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [74.37,28.70,1421.92,10],
+        "lump": {"name": "glacier-money-90"}
+      },
+      {
+        
+        "trans": [81.95,27.56,1429.47],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [81.95,27.56,1429.47,10],
+        "lump": {"name": "glacier-money-91"}
+      },
+      {
+        "trans": [82.36,25.71,1445.26],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [82.36,25.71,1445.26,10],
+        "lump": {"name": "glacier-money-92"}
+      },
+      {
+        "trans": [74.43,25.11,1473.90],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [74.43,25.11,1473.90,10],
+        "lump": {"name": "glacier-money-93"}
+      },
+      {
+        "trans": [68.94,25.96,1485.91],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [68.94,25.96,1485.91,10],
+        "lump": {"name": "glacier-money-94"}
+      },
+      {
+        "trans": [61.81,26.82,1497.96],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [61.81,26.82,1497.96,10],
+        "lump": {"name": "glacier-money-95"}
+      },
+      {
+        "trans": [74.84,14.75,1562.28],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [74.84,14.75,1562.28,10],
+        "lump": {"name": "glacier-money-96"}
+      },
+      {
+        "trans": [82.95,17.00,1570.34],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [82.95,17.00,1570.34,10],
+        "lump": {"name": "glacier-money-97"}
+      },
+      {
+        "trans": [90.51,19.09,1577.81],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [90.51,19.09,1577.81,10],
+        "lump": {"name": "glacier-money-98"}
+      },
+      {
+        
+        "trans": [104.85,22.00,1581.86],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [104.85,22.00,1581.86,10],
+        "lump": {"name": "glacier-money-99"}
+      },
+      {
+        "trans": [120.98,24.27,1588.50],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [120.98,24.27,1588.50,10],
+        "lump": {"name": "glacier-money-100"}
+      },
+      {
+        "trans": [133.66, 25.44, 1597.38],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [128.63,24.94,1593.59,10],
+        "lump": {"name": "glacier-money-101"}
+      },
+      // money-102 removed
+      {
+        "trans": [142.05,27.75,1629.56],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [142.05,27.75,1629.56,10],
+        "lump": {"name": "glacier-money-103"}
+      },
+      {
+        "trans": [149.49,28.23,1637.50],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [149.49,28.23,1637.50,10],
+        "lump": {"name": "glacier-money-104"}
+      },
+      {
+        "trans": [150.38,28.59,1648.70],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [150.38,28.59,1648.70,10],
+        "lump": {"name": "glacier-money-105"}
+      },
+      {
+        "trans": [127.88,29.68,1667.47],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [127.88,29.68,1667.47,10],
+        "lump": {"name": "glacier-money-106"}
+      },
+      {
+        "trans": [127.96,29.68,1680.22],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [127.96,29.68,1680.22,10],
+        "lump": {"name": "glacier-money-107"}
+      },
+      {
+        "trans": [141.20,29.68,1674.18],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [141.20,29.68,1674.18,10],
+        "lump": {"name": "glacier-money-108"}
+      },
+      {
+        "trans": [143.59,29.68,1686.12],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [143.59,29.68,1686.12,10],
+        "lump": {"name": "glacier-money-109"}
+      },
+      {
+        "trans": [156.01,29.68,1681.30],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [156.01,29.68,1681.30,10],
+        "lump": {"name": "glacier-money-110"}
+      },
+      {
+        "trans": [158.70,29.68,1692.43],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [158.70,29.68,1692.43,10],
+        "lump": {"name": "glacier-money-111"}
+      },
+      {
+        "trans": [90.14,32.76,1692.99],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [90.14,32.76,1692.99,10],
+        "lump": {"name": "glacier-money-112"}
+      },
+      {
+        "trans": [83.92,35.15,1693.80],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [83.92,35.15,1693.80,10],
+        "lump": {"name": "glacier-money-113"}
+      },
+      {
+        "trans": [77.00,37.59,1695.20],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [77.00,37.59,1695.20,10],
+        "lump": {"name": "glacier-money-114"}
+      },
+      {
+        "trans": [88.62,24.40,1745.62],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [88.62,24.40,1745.62,10],
+        "lump": {"name": "glacier-money-115"}
+      },
+      {
+        "trans": [88.55,22.34,1762.16],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [88.55,22.34,1762.16,10],
+        "lump": {"name": "glacier-money-116"}
+      },
+      {
+        "trans": [85.63,20.26,1778.57],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [85.63,20.26,1778.57,10],
+        "lump": {"name": "glacier-money-117"}
+      },
+      {
+        "trans": [80.16,18.20,1794.76],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [80.16,18.20,1794.76,10],
+        "lump": {"name": "glacier-money-118"}
+      },
+      {
+        "trans": [72.39,15.71,1811.12],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [72.39,15.71,1811.12,10],
+        "lump": {"name": "glacier-money-119"}
+      },
+      {
+        
+        "trans": [141.51,27.89,1562.04],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [141.51,27.89,1562.04,10],
+        "lump": {"name": "glacier-money-120"}
+      },
+      {
+        
+        "trans": [147.40, 29.68, 1550.81],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [147.15,29.68,1551.71,10],
+        "lump": {"name": "glacier-money-121"}
+      },
+      {
+        
+        "trans": [58.85,12.01,1821.98],
+        "etype": "money",
+        "game_task": "(game-task none)",
+        "quat": [0,0,0,1],
+        "bsphere": [58.85,12.01,1821.98,10],
+        "lump": {"name": "glacier-money-122"}
+      },
+      /////////////////////BUZZER//////////////////////////////
+      {
+        "trans": [32.89, 1.97, 1843.78],
+        "etype": "crate",
+        "game_task": "(game-task glacier-buzzer)",
+        "quat": [0,0,0,1],
+        "bsphere": [32.89, 1.97, 1843.78, 10],
+        "lump": {
+          "name": "glacier-fly1",
+          "crate-type": "'iron",
+          "eco-info": [ "buzzer-info", "(game-task glacier-buzzer)", 0 ],
+          "movie-pos": ["movie-pos", [32.89, 1.97, 1843.78, -14.0362]]
+        }
+    },
+    {
+        "trans": [21.69,  12.33, 1682.40],
+        "etype": "crate",
+        "game_task": "(game-task glacier-buzzer)",
+        "quat": [0,0,0,1],
+        "bsphere": [-1.18, 11.34, 1691.06, 10],
+        "lump": {
+          "name": "glacier-fly2",
+          "crate-type": "'iron",
+          "eco-info": [ "buzzer-info", "(game-task glacier-buzzer)", 1 ],
+          "movie-pos": ["movie-pos", [1.26, 11.34, 1702.73, 80.8812]]
+        }
+    },
+    {
+        "trans": [-116.54, 39.08, 1596.62],
+        "etype": "crate",
+        "game_task": "(game-task glacier-buzzer)",
+        "quat": [0,0,0,1],
+        "bsphere": [-116.54, 39.08, 1596.62, 10],
+        "lump": {
+          "name": "glacier-fly3",
+          "crate-type": "'iron",
+          "eco-info": [ "buzzer-info", "(game-task glacier-buzzer)", 2 ],
+          "movie-pos": ["movie-pos", [-108.26, 26.5, 1594.16, -1.6240]]
+        }
+    },
+    {
+        "trans": [-89.53, 24.98, 1492.90],
+        "etype": "crate",
+        "game_task": "(game-task glacier-buzzer)",
+        "quat": [0,0,0,1],
+        "bsphere": [-89.53, 24.98, 1492.90, 10],
+        "lump": {
+          "name": "glacier-fly4",
+          "crate-type": "'iron",
+          "eco-info": [ "buzzer-info", "(game-task glacier-buzzer)", 3 ],
+          "movie-pos": ["movie-pos", [-98.65,  23.38, 1499.79, -0.5342]]
+        }
+    },
+    {
+        "trans": [41.97, 16.31, 1575.26],
+        "etype": "crate",
+        "game_task": "(game-task glacier-buzzer)",
+        "quat": [0,0,0,1],
+        "bsphere": [41.97, 16.31, 1575.26, 10],
+        "lump": {
+          "name": "glacier-fly5",
+          "crate-type": "'iron",
+          "eco-info": [ "buzzer-info", "(game-task glacier-buzzer)", 4 ],
+          "movie-pos": ["movie-pos", [31.63, 15.98, 1581.04, -75.0698]]
+        }
+    },
+    {
+        "trans": [3.68, 31.79, 1422.14],
+        "etype": "crate",
+        "game_task": "(game-task glacier-buzzer)",
+        "quat": [0,0,0,1],
+        "bsphere": [3.68, 31.79, 1422.14, 10],
+        "lump": {
+          "name": "glacier-fly6",
+          "crate-type": "'iron",
+          "eco-info": [ "buzzer-info", "(game-task glacier-buzzer)", 5 ],
+          "movie-pos": ["movie-pos", [14.08, 32.20, 1426.40, 26.0272]]
+        }
+    },
+    {
+        "trans": [166.66, 27.09, 1667.99],
+        "etype": "crate",
+        "game_task": "(game-task glacier-buzzer)",
+        "quat": [0,0,0,1],
+        "bsphere": [166.66, 27.09, 1667.99, 10],
+        "lump": {
+          "name": "glacier-fly7",
+          "crate-type": "'iron",
+          "eco-info": [ "buzzer-info", "(game-task glacier-buzzer)", 6 ],
+          "movie-pos": ["movie-pos", [144.33, 26.84, 1660.44, 17.9126]]
+        }
+    }, 
+      /////////////////////ECOBALLS////////////////////////////
+      {
+        "trans": [ 155.88, 26.99, 1545.64 ], // translation
+        "etype": "eco-blue", // actor type
+        "game_task": "(game-task none)", // associated game task (for powercells, etc)
+        "quat": [ 0, 0, 0, 1 ], // quaternion
+        "bsphere": [ 1684.97, 49.98, -44.10, 10 ], // bounding sphere
+        "lump": {
+          "name": "glacier-eco-blue2"
+        }
+      },
+      /////////////////////VENTS///////////////////////////////
+      {
+        "trans": [-77.63, 28.12, 1646.21],
+        "etype": "ecovent",
+        "game_task": "(game-task red-eggtop)",
+        "quat": [0,0,0,1],
+        "bsphere": [-77.63, 28.92, 1646.21, 10],
+        "lump": {
+          "name": "glacier-vent-01",
+          "eco-info": ["int32", 2, 1],
+          "options": ["enum-uint32", "(fact-options vent-valve vent-blocked)"]
+        }
+    },
+    {
+        "trans": [-118.15, 16.34, 1523.38],
+        "etype": "ecovent",
+        "game_task": "(game-task red-eggtop)",
+        "quat": [0,0,0,1],
+        "bsphere": [-118.15, 17.14, 1523.38, 10],
+        "lump": {
+          "name": "glacier-vent-02",
+          "eco-info": ["int32", 2, 1],
+          "options": ["enum-uint32", "(fact-options vent-valve vent-blocked)"]
+        }
+    },
+    {
+        "trans": [131.33, 25.65, 1609.42],
+        "etype": "ecovent",
+        "game_task": "(game-task red-eggtop)",
+        "quat": [0,0,0,1],
+        "bsphere": [131.33, 26.45, 1609.42, 10],
+        "lump": {
+          "name": "glacier-vent-03",
+          "eco-info": ["int32", 2, 1],
+          "options": ["enum-uint32", "(fact-options vent-valve vent-blocked)"]
+        }
+    },
+    {
+      "trans": [154.32, 23.9, 1521.42],
+      "etype": "ecovent",
+      "game_task": "(game-task red-eggtop)",
+      "quat": [0,0,0,1],
+      "bsphere": [131.33, 26.45, 1609.42, 10],
+      "lump": {
+        "name": "glacier-vent-04",
+        "eco-info": ["int32", 2, 1],
+        "options": ["enum-uint32", "(fact-options vent-valve vent-blocked)"]
+      }
+  },
+    ////////////////////////PLATS///////////////////////////////
+    {
+      "trans": [141.29,25.89,1561.92],
+      "etype": "plat",
+      "game_task": "(game-task none)",
+      "quat": [0,0,0,1],
+      "bsphere": [141.29,25.89,1561.92,10],
+      "lump": {
+        "name": "glacier-plat-1",
+        "path": ["vector4m",
+          [141.29, 25.89, 1561.92, 1.0],
+          [141.29, 23.89, 1561.92, 1.0],
+          [141.29, 21.89, 1561.92, 1.0]
+        ],
+        "sync": ["float", 5.0, 0.0]
+      }
+    },
+    {
+      "trans": [147.48,27.68,1550.94],
+      "etype": "plat",
+      "game_task": "(game-task none)",
+      "quat": [0,0,0,1],
+      "bsphere": [147.48,27.68,1550.94,10],
+      "lump": {
+        "name": "glacier-plat-2",
+        "path": ["vector4m",
+          [147.48, 27.68, 1550.94, 1.0],
+          [147.48, 25.68, 1550.94, 1.0],
+          [147.48, 23.68, 1550.94, 1.0]
+        ],
+        "sync": ["float", 5.0, 0.0]
+      }
+    },
+    {
+      "trans": [128.29,27.68,1667.54],
+      "etype": "plat",
+      "game_task": "(game-task none)",
+      "quat": [0,0,0,1],
+      "bsphere": [128.29,27.68,1667.54,10],
+      "lump": {
+        "name": "glacier-plat-3",
+        
+        "sync": ["float", 5.0, 0.0]
+      }
+    },
+    {
+      "trans": [128.25,27.68,1680.19],
+      "etype": "plat",
+      "game_task": "(game-task none)",
+      "quat": [0,0,0,1],
+      "bsphere": [128.25,27.68,1680.19,10],
+      "lump": {
+        "name": "glacier-plat-4",
+        
+        "sync": ["float", 5.0, 0.0]
+      }
+    },
+    {
+      "trans": [140.78,27.68,1673.87],
+      "etype": "plat",
+      "game_task": "(game-task none)",
+      "quat": [0,0,0,1],
+      "bsphere": [140.78,27.68,1673.87,10],
+      "lump": {
+        "name": "glacier-plat-5",
+        
+        "sync": ["float", 5.0, 0.0]
+      }
+    },
+    {
+      "trans": [143.89,27.68,1686.21],
+      "etype": "plat",
+      "game_task": "(game-task none)",
+      "quat": [0,0,0,1],
+      "bsphere": [143.89,27.68,1686.21,10],
+      "lump": {
+        "name": "glacier-plat-6",
+        
+        "sync": ["float", 5.0, 0.0]
+      }
+    },
+    {
+      "trans": [155.98,27.68,1681.16],
+      "etype": "plat",
+      "game_task": "(game-task none)",
+      "quat": [0,0,0,1],
+      "bsphere": [155.98,27.68,1681.16,10],
+      "lump": {
+        "name": "glacier-plat-7",
+        
+        "sync": ["float", 5.0, 0.0]
+      }
+    },
+    {
+      "trans": [158.87,27.68,1692.48],
+      "etype": "plat",
+      "game_task": "(game-task none)",
+      "quat": [0,0,0,1],
+      "bsphere": [158.87,27.68,1692.48,10],
+      "lump": {
+        "name": "glacier-plat-8",
+        
+        "sync": ["float", 5.0, 0.0]
+      }
+    },
+    {
+      "trans": [14.79,3.50,1632.48],
+      "etype": "plat",
+      "game_task": "(game-task none)",
+      "quat": [0,0,0,1],
+      "bsphere": [14.79,3.50,1632.48,10],
+      "lump": {
+        "name": "glacier-plat-9-lifesaver",
+        "sync": ["float", 5.0, 0.0]
+      }
+    },
+    {
+      "trans": [-109.31,15,1555.48],
+      "etype": "plat",
+      "game_task": "(game-task none)",
+      "quat": [0,0,0,1],
+      "bsphere": [158.87,27.68,1692.48,10],
+      "lump": {
+        "name": "glacier-plat-10-lifesaver",
+        "sync": ["float", 5.0, 0.0]
+      }
+    },
+    ////////////////////////ECOCRYSTALS/////////////////////////
+    {
+      "trans": [35.16,17.00,1703.00],
+      "etype": "dark-crystal",
+      "game_task": "(game-task glacier-eco-crystal)",
+      "quat": [0,0,0,1],
+      "bsphere": [35.16,17.00,1703.00,10],
+      "lump": {
+        "name": "glacier-crystal-01",
+        "extra-id": ["int32",1],
+        "movie-pos": ["movie-pos", [35.16,17.00,1703.00, -87.4970]]
+      }
+  },
+  {
+      "trans": [-112.34,29.19,1421.65],
+      "etype": "dark-crystal",
+      "game_task": "(game-task glacier-eco-crystal)",
+      "quat": [0,0,0,1],
+      "bsphere": [-112.34,29.19,1421.65,10],
+      "lump": {
+        "name": "glacier-crystal-02",
+        "extra-id": ["int32",2],
+        "movie-pos": ["movie-pos", [-100.24, 26.69, 1422.51, -10.5558]]
+      }
+  },
+  {
+      "trans": [41.84,17.74,1533.08],
+      "etype": "dark-crystal",
+      "game_task": "(game-task glacier-eco-crystal)",
+      "quat": [0,0,0,1],
+      "bsphere": [41.84,17.74,1533.08,10],
+      "lump": {
+        "name": "glacier-crystal-03",
+        "extra-id": ["int32",3],
+        "movie-pos": ["movie-pos", [41.84,17.74,1533.08, -58.2286]]
+      }
+  },
+  {
+      "trans": [170.81,32.70,1700.05],
+      "etype": "dark-crystal",
+      "game_task": "(game-task glacier-eco-crystal)",
+      "quat": [0,0,0,1],
+      "bsphere": [170.81,32.70,1700.05,10],
+      "lump": {
+        "name": "glacier-crystal-04",
+        "extra-id": ["int32",4],
+        "movie-pos": ["movie-pos", [170.81,32.70,1700.05, -44.1522]]
+      }
+  },
+  {
+      "trans": [-1.75, 15.84, 1582.35],
+      "etype": "dark-crystal",
+      "game_task": "(game-task glacier-eco-crystal)",
+      "quat": [0,0,0,1],
+      "bsphere": [35.89,16.23,1578.86,10],
+      "lump": {
+        "name": "glacier-crystal-05",
+        "extra-id": ["int32",5],
+        "movie-pos": ["movie-pos", [-1.75, 15.84, 1582.35, 48.9883]]
+      }
+  },
+
+  ////////////DARKECOBOX//////////////
+  {
+    "trans": [83.33, 21.59, 1458.28],
+    "etype": "crate",
+    "game_task": "(game-task none)",
+    "quat": [0.0805, 0.3812, 0.0, 0.9201],
+    "bsphere": [83.33, 22.59, 1458.28, 10],
+    "lump": {
+      "name": "glacier-darkecobox-1",
+      "crate-type": "'darkeco"
+    }
+},
+{
+    "trans": [74.52, 22.01, 1467.33],
+    "etype": "crate",
+    "game_task": "(game-task none)",
+    "quat": [-0.0449, 0.2548, 0.1678, 0.9514],
+    "bsphere": [74.52, 23.01, 1467.33, 10],
+    "lump": {
+      "name": "glacier-darkecobox-2",
+      "crate-type": "'darkeco"
+    }
+},
+{
+    "trans": [56.54, 24.32, 1512.35],
+    "etype": "crate",
+    "game_task": "(game-task none)",
+    "quat": [-0.1261, -0.0922, 0.0317, 0.9871],
+    "bsphere": [56.54, 25.32, 1512.35, 10],
+    "lump": {
+      "name": "glacier-darkecobox-3",
+      "crate-type": "'darkeco"
+    }
+},
+{
+    "trans": [47.10, 25.26, 1515.02],
+    "etype": "crate",
+    "game_task": "(game-task none)",
+    "quat": [0.1873, 0.2011, -0.1213, 0.9531],
+    "bsphere": [47.10, 26.26, 1515.02, 10],
+    "lump": {
+      "name": "glacier-darkecobox-4",
+      "crate-type": "'darkeco"
+    }
+},
+{
+    "trans": [65.50, 9.80, 1568.02],
+    "etype": "crate",
+    "game_task": "(game-task none)",
+    "quat": [0.0488, -0.0375, 0.1323, 0.9892],
+    "bsphere": [65.50, 10.80, 1568.02, 10],
+    "lump": {
+      "name": "glacier-darkecobox-5",
+      "crate-type": "'darkeco"
+    }
+},
+{
+    "trans": [90.51, 15.63, 1566.94],
+    "etype": "crate",
+    "game_task": "(game-task none)",
+    "quat": [-0.1271, 0.1448, 0.2681, 0.9432],
+    "bsphere": [90.51, 16.63, 1566.94, 10],
+    "lump": {
+      "name": "glacier-darkecobox-6",
+      "crate-type": "'darkeco"
+    }
+},
+{
+    "trans": [106.42, 19.03, 1572.73],
+    "etype": "crate",
+    "game_task": "(game-task none)",
+    "quat": [0.1197, -0.2462, -0.0105, 0.9629],
+    "bsphere": [106.42, 20.03, 1572.73, 10],
+    "lump": {
+      "name": "glacier-darkecobox-7",
+      "crate-type": "'darkeco"
+    }
+},
+{
+    "trans": [91.54, 23.62, 1731.73],
+    "etype": "crate",
+    "game_task": "(game-task none)",
+    "quat": [-0.1814, 0.0876, 0.1034, 0.9740],
+    "bsphere": [91.54, 24.62, 1731.73, 10],
+    "lump": {
+      "name": "glacier-darkecobox-8",
+      "crate-type": "'darkeco"
+    }
+},
+{
+  "trans": [86.23, 20.22, 1753.96],
+  "etype": "crate",
+  "game_task": "(game-task none)",
+  "quat": [0.2703, -0.3475, 0.1764, 0.8813],
+  "bsphere": [86.23, 21.22, 1753.96, 10],
+  "lump": {
+    "name": "glacier-darkecobox-9",
+    "crate-type": "'darkeco"
+  }
+},
+{
+  "trans": [82.07, 14.72, 1800.11],
+  "etype": "crate",
+  "game_task": "(game-task none)",
+  "quat": [-0.0547, 0.5195, -0.1143, 0.8458],
+  "bsphere": [82.07, 15.72, 1800.11, 10],
+  "lump": {
+    "name": "glacier-darkecobox-10",
+    "crate-type": "'darkeco"
+  }
+},
+{
+  "trans": [55.68, 9.32, 1818.27],
+  "etype": "crate",
+  "game_task": "(game-task none)",
+  "quat": [0.4017, -0.0753, 0.2615, 0.8738],
+  "bsphere": [55.68, 10.32, 1818.27, 10],
+  "lump": {
+    "name": "glacier-darkecobox-11",
+    "crate-type": "'darkeco"
+  }
+},
+////////////WATER/////////////////
+{
+  "trans": [ 1500.456, 0.0, 1717.1 ], // translation
+  "etype": "water-anim", // actor type
+  "game_task": 0, // associated game task (for powercells, etc)
+  "quat": [ 0, 0, 0, 1 ], // quaternion
+  "bsphere": [ 15.456, 0.0, 1717.1, 200.0 ], // bounding sphere
+  "lump": {
+    "vol": ["vector-vol",
+    [-1.000, 0.000, -0.000, 176.177],
+    [0.000, 0.000, -1.000, -1337.281],
+    [1.000, 0.000, -0.000, 261.787],
+    [0.000, 0.000, 1.000, 2108.312],
+    [0.000, -1.000, -0.000, 13.558],
+    [0.000, 1.000, -0.000, 0.054]
+    ]
+,
+    "name": "glacier-ocean-vol",
+    "water-height": [ "float", 0.0, 2048.0, 8192.0, 1048588.0 ], // camera height, ?, wadledept, flags
+    "look": [ "int32", 8 ],
+    "vis-dist": [ "meters", 200.0 ]
+  }
+},
+
+/////////////////////////////////////////////////////////////ENEMIES/////////////////////////////////
+// SNOWBUNNY
+{
+  "aid": 50100,
+  "trans": [-9.06, 4.14, 1946.21],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-9.06, 5.14, 1946.21, 10],
+  "lump": {
+    "name": "glacier-bunny-1",
+    "path": ["vector3m",
+      [-9.06, 4.14, 1946.21],
+      [-3.86, 2.87, 1952.18]
+    ]
+  }
+},
+{
+  "aid": 50101,
+  "trans": [-2.47, 4.02, 1944.07],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-2.47, 5.02, 1944.07, 10],
+  "lump": {
+    "name": "glacier-bunny-2",
+    "path": ["vector3m",
+      [-2.47, 4.02, 1944.07],
+      [-11.18, 3.98, 1949.76]
+    ],
+    "nav-mesh-actor": [ "uint32", 50100 ]
+  }
+},
+{
+  "aid": 50200,
+  "trans": [16.49, 6.50, 1892.38],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [16.49, 7.50, 1892.38, 10],
+  "lump": {
+    "name": "glacier-bunny-3",
+    "path": ["vector3m",
+      [16.49, 6.50, 1892.38],
+      [13.04, 7.22, 1899.81],
+      [10.84, 7.10, 1904.04]
+    ]
+  }
+},
+{
+  "aid": 50300,
+  "trans": [19.86, 2.48, 1882.90],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [19.86, 3.48, 1882.90, 10],
+  "lump": {
+    "name": "glacier-bunny-4",
+    "path": ["vector3m",
+      [19.86, 2.48, 1882.90],
+      [22.00, 3.78, 1876.53],
+      [24.64, 5.76, 1867.91]
+    ]
+  }
+},
+{
+  "aid": 50400,
+  "trans": [41.98, 2.28, 1847.47],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [41.98, 3.28, 1847.47, 10],
+  "lump": {
+    "name": "glacier-bunny-5",
+    "path": ["vector3m",
+      [41.98, 2.28, 1847.47],
+      [30.80, 1.99, 1851.98]
+    ]
+  }
+},
+{
+  "aid": 50401,
+  "trans": [28.45, 1.60, 1835.21],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [28.45, 2.60, 1835.21, 10],
+  "lump": {
+    "name": "glacier-bunny-6",
+    "path": ["vector3m",
+      [28.45, 1.60, 1835.21],
+      [38.10, 1.26, 1831.82]
+    ],
+    "nav-mesh-actor": [ "uint32", 50400 ]
+  }
+},
+{
+  "aid": 50500,
+  "trans": [29.64, 2.16, 1811.55],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [29.64, 3.16, 1811.55, 10],
+  "lump": {
+    "name": "glacier-bunny-7",
+    "path": ["vector3m",
+      [29.64, 2.16, 1811.55],
+      [35.59, 1.63, 1803.60]
+    ]
+  }
+},
+{
+  "aid": 50600,
+  "trans": [18.53, 2.09, 1786.57],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [18.53, 3.09, 1786.57, 10],
+  "lump": {
+    "name": "glacier-bunny-8",
+    "path": ["vector3m",
+      [18.53, 2.09, 1786.57]
+    ]
+  }
+},
+{
+  "aid": 50700,
+  "trans": [23.53, 12.34, 1689.66],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [23.53, 13.34, 1689.66, 10],
+  "lump": {
+    "name": "glacier-bunny-9",
+    "path": ["vector3m",
+      [23.53, 12.34, 1689.66],
+      [17.47, 11.58, 1696.78],
+      [10.20, 11.43, 1706.48]
+    ]
+  }
+},
+{
+  "aid": 50701,
+  "trans": [26.58, 11.66, 1712.96],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [26.58, 12.66, 1712.96, 10],
+  "lump": {
+    "name": "glacier-bunny-10",
+    "path": ["vector3m",
+      [26.58, 11.66, 1712.96],
+      [20.50, 11.35, 1705.61],
+      [14.57, 11.56, 1696.87]
+    ],
+    "nav-mesh-actor": [ "uint32", 50700 ]
+  }
+},
+{
+  "aid": 50800,
+  "trans": [-58.03, 17.93, 1698.73],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-58.03, 18.93, 1698.73, 10],
+  "lump": {
+    "name": "glacier-bunny-11",
+    "path": ["vector3m",
+      [-58.03, 17.93, 1698.73],
+      [-52.62, 17.59, 1699.78],
+      [-45.43, 16.87, 1701.05]
+    ]
+  }
+},
+{
+  "aid": 50900,
+  "trans": [-70.53, 29.23, 1655.81],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-70.53, 30.23, 1655.81, 10],
+  "lump": {
+    "name": "glacier-bunny-12",
+    "path": ["vector3m",
+      [-70.53, 29.23, 1655.81],
+      [-65.71, 29.80, 1661.62]
+    ]
+  }
+},
+{
+  "aid": 50901,
+  "trans": [-82.45, 29.36, 1651.62],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-82.45, 30.36, 1651.62, 10],
+  "lump": {
+    "name": "glacier-bunny-13",
+    "path": ["vector3m",
+      [-82.45, 29.36, 1651.62],
+      [-83.90, 28.44, 1641.90]
+    ],
+    "nav-mesh-actor": [ "uint32", 50900 ]
+  }
+},
+{
+  "aid": 50902,
+  "trans": [-84.16, 30.03, 1631.66],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-84.16, 31.03, 1631.66, 10],
+  "lump": {
+    "name": "glacier-bunny-14",
+    "path": ["vector3m",
+      [-84.16, 30.03, 1631.66],
+      [-73.97, 30.79, 1636.78]
+    ],
+    "nav-mesh-actor": [ "uint32", 50900 ]
+  }
+},
+{
+  "aid": 50903,
+  "trans": [-60.55, 31.68, 1647.89],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-60.55, 32.68, 1647.89, 10],
+  "lump": {
+    "name": "glacier-bunny-15",
+    "path": ["vector3m",
+      [-60.55, 31.68, 1647.89],
+      [-67.21, 29.76, 1651.03]
+    ],
+    "nav-mesh-actor": [ "uint32", 50900 ]
+  }
+},
+{
+  "aid": 50904,
+  "trans": [-59.93, 30.68, 1659.99],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-59.93, 31.68, 1659.99, 10],
+  "lump": {
+    "name": "glacier-bunny-16",
+    "path": ["vector3m",
+      [-59.93, 30.68, 1659.99],
+      [-65.97, 29.89, 1656.92]
+    ],
+    "nav-mesh-actor": [ "uint32", 50900 ]
+  }
+},
+{
+  "aid": 50905,
+  "trans": [-93.46, 27.71, 1638.49],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-93.46, 28.71, 1638.49, 10],
+  "lump": {
+    "name": "glacier-bunny-17",
+    "path": ["vector3m",
+      [-93.46, 27.71, 1638.49],
+      [-84.68, 28.44, 1641.58]
+    ],
+    "nav-mesh-actor": [ "uint32", 50900 ]
+  }
+},
+{
+  "aid": 50906,
+  "trans": [-93.36, 27.64, 1624.60],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-93.36, 28.64, 1624.60, 10],
+  "lump": {
+    "name": "glacier-bunny-18",
+    "path": ["vector3m",
+      [-93.36, 27.64, 1624.60],
+      [-86.27, 29.36, 1631.46]
+    ],
+    "nav-mesh-actor": [ "uint32", 50900 ]
+  }
+},
+{
+  "aid": 50907,
+  "trans": [-102.50, 27.19, 1610.75],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-102.50, 28.19, 1610.75, 10],
+  "lump": {
+    "name": "glacier-bunny-19",
+    "path": ["vector3m",
+      [-102.50, 27.19, 1610.75],
+      [-94.60, 27.51, 1621.44]
+    ],
+    "nav-mesh-actor": [ "uint32", 50900 ]
+  }
+},
+{
+  "aid": 50908,
+  "trans": [-113.58, 26.22, 1618.33],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-113.58, 27.22, 1618.33, 10],
+  "lump": {
+    "name": "glacier-bunny-20",
+    "path": ["vector3m",
+      [-113.58, 26.22, 1618.33],
+      [-102.16, 26.34, 1629.67]
+    ],
+    "nav-mesh-actor": [ "uint32", 50900 ]
+  }
+},
+{
+  "aid":51000,
+  "trans": [-102.39, 17.65, 1527.35],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-102.39, 18.65, 1527.35, 10],
+  "lump": {
+    "name": "glacier-bunny-21",
+    "path": ["vector3m",
+      [-102.39, 17.65, 1527.35],
+      [-110.17, 17.31, 1519.70]
+    ]
+  }
+},
+{
+  "aid":51001,
+  "trans": [-121.76, 17.15, 1517.98],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-121.76, 18.15, 1517.98, 10],
+  "lump": {
+    "name": "glacier-bunny-22",
+    "path": ["vector3m",
+      [-121.76, 17.15, 1517.98],
+      [-121.99, 17.96, 1508.33]
+    ],
+    "nav-mesh-actor": [ "uint32", 51000 ]
+  }
+},
+{
+  "aid":51002,
+  "trans": [-129.67, 19.20, 1502.73],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-129.67, 20.20, 1502.73, 10],
+  "lump": {
+    "name": "glacier-bunny-23",
+    "path": ["vector3m",
+      [-129.67, 19.20, 1502.73],
+      [-122.12, 18.68, 1500.56]
+    ],
+    "nav-mesh-actor": [ "uint32", 51000 ]
+  }
+},
+{
+  "aid":51003,
+  "trans": [-115.99, 18.26, 1501.61],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-115.99, 19.26, 1501.61, 10],
+  "lump": {
+    "name": "glacier-bunny-24",
+    "path": ["vector3m",
+      [-115.99, 18.26, 1501.61],
+      [-106.49, 18.97, 1494.87]
+    ],
+    "nav-mesh-actor": [ "uint32", 51000 ]
+  }
+},
+{
+  "aid":51004,
+  "trans": [-112.28, 20.17, 1488.67],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-112.28, 21.17, 1488.67, 10],
+  "lump": {
+    "name": "glacier-bunny-25",
+    "path": ["vector3m",
+      [-112.28, 20.17, 1488.67],
+      [-118.08, 20.90, 1480.50]
+    ],
+    "nav-mesh-actor": [ "uint32", 51000 ]
+  }
+},
+{
+  "aid":51005,
+  "trans": [-117.43, 21.13, 1473.97],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-117.43, 22.13, 1473.97, 10],
+  "lump": {
+    "name": "glacier-bunny-26",
+    "path": ["vector3m",
+      [-117.43, 21.13, 1473.97],
+      [-107.31, 20.49, 1469.71]
+    ],
+    "nav-mesh-actor": [ "uint32", 51000 ]
+  }
+},
+{
+  "aid":51006,
+  "trans": [-98.50, 19.88, 1468.03],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-98.50, 20.88, 1468.03, 10],
+  "lump": {
+    "name": "glacier-bunny-27",
+    "path": ["vector3m",
+      [-98.50, 19.88, 1468.03],
+      [-87.29, 20.27, 1467.73]
+    ],
+    "nav-mesh-actor": [ "uint32", 51000 ]
+  }
+},
+{
+  "aid":51007,
+  "trans": [-93.06, 20.81, 1462.35],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-93.06, 21.81, 1462.35, 10],
+  "lump": {
+    "name": "glacier-bunny-28",
+    "path": ["vector3m",
+      [-93.06, 20.81, 1462.35],
+      [-101.70, 20.62, 1457.21]
+    ],
+    "nav-mesh-actor": [ "uint32", 51000 ]
+  }
+},
+{
+  "aid":51008,
+  "trans": [-113.33, 22.51, 1453.95],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-113.33, 23.51, 1453.95, 10],
+  "lump": {
+    "name": "glacier-bunny-29",
+    "path": ["vector3m",
+      [-113.33, 22.51, 1453.95],
+      [-110.98, 21.70, 1444.21]
+    ],
+    "nav-mesh-actor": [ "uint32", 51000 ]
+  }
+},
+{
+  "aid":51009,
+  "trans": [-111.56, 21.77, 1434.99],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-111.56, 22.77, 1434.99, 10],
+  "lump": {
+    "name": "glacier-bunny-30",
+    "path": ["vector3m",
+      [-111.56, 21.77, 1434.99],
+      [-101.84, 22.08, 1435.20]
+    ],
+    "nav-mesh-actor": [ "uint32", 51000 ]
+  }
+},
+{
+  "aid": 51200,
+  "trans": [12.83, 32.04, 1430.18],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [12.83, 33.04, 1430.18, 10],
+  "lump": {
+    "name": "glacier-bunny-31",
+    "path": ["vector3m",
+      [12.83, 32.04, 1430.18],
+      [15.81, 31.15, 1442.71]
+    ]
+  }
+},
+{
+  "aid": 51201,
+  "trans": [23.06, 32.18, 1428.82],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [23.06, 33.18, 1428.82, 10],
+  "lump": {
+    "name": "glacier-bunny-32",
+    "path": ["vector3m",
+      [23.06, 32.18, 1428.82],
+      [22.10, 31.07, 1440.28]
+    ],
+    "nav-mesh-actor": [ "uint32", 51200 ]
+  }
+},
+{
+  "aid": 51202,
+  "trans": [35.84, 31.69, 1427.72],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [35.84, 32.69, 1427.72, 10],
+  "lump": {
+    "name": "glacier-bunny-33",
+    "path": ["vector3m",
+      [35.84, 31.69, 1427.72],
+      [27.86, 31.36, 1436.95]
+    ],
+    "nav-mesh-actor": [ "uint32", 51200 ]
+  }
+},
+{
+  "aid": 51203,
+  "trans": [40.64, 30.05, 1435.20],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [40.64, 31.05, 1435.20, 10],
+  "lump": {
+    "name": "glacier-bunny-34",
+    "path": ["vector3m",
+      [40.64, 30.05, 1435.20],
+      [30.75, 31.91, 1431.29]
+    ],
+    "nav-mesh-actor": [ "uint32", 51200 ]
+  }
+},
+{
+  "aid": 51204,
+  "trans": [12.99, 31.13, 1443.75],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [12.99, 32.13, 1443.75, 10],
+  "lump": {
+    "name": "glacier-bunny-35",
+    "path": ["vector3m",
+      [12.99, 31.13, 1443.75],
+      [19.06, 31.44, 1438.17]
+    ],
+    "nav-mesh-actor": [ "uint32", 51200 ]
+  }
+},
+{
+  "aid": 51205,
+  "trans": [4.23, 31.37, 1430.86],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [4.23, 32.37, 1430.86, 10],
+  "lump": {
+    "name": "glacier-bunny-36",
+    "path": ["vector3m",
+      [4.23, 31.37, 1430.86],
+      [15.28, 31.90, 1433.75]
+    ],
+    "nav-mesh-actor": [ "uint32", 51200 ]
+  }
+},
+{
+  "aid": 51206,
+  "trans": [7.10, 32.10, 1418.20],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [7.10, 33.10, 1418.20, 10],
+  "lump": {
+    "name": "glacier-bunny-37",
+    "path": ["vector3m",
+      [7.10, 32.10, 1418.20],
+      [11.80, 32.16, 1426.08]
+    ],
+    "nav-mesh-actor": [ "uint32", 51200 ]
+  }
+},
+{
+  "aid": 51207,
+  "trans": [40.46, 31.71, 1412.61],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [40.46, 32.71, 1412.61, 10],
+  "lump": {
+    "name": "glacier-bunny-38",
+    "path": ["vector3m",
+      [40.46, 31.71, 1412.61],
+      [36.34, 31.78, 1424.90]
+    ],
+    "nav-mesh-actor": [ "uint32", 51200 ]
+  }
+},
+{
+  "aid": 51208,
+  "trans": [47.13, 31.16, 1418.16],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [47.13, 32.16, 1418.16, 10],
+  "lump": {
+    "name": "glacier-bunny-39",
+    "path": ["vector3m",
+      [47.13, 31.16, 1418.16],
+      [37.56, 31.53, 1426.57]
+    ],
+    "nav-mesh-actor": [ "uint32", 51200 ]
+  }
+},
+{
+  "aid": 51400,
+  "trans": [153.73, 26.15, 1635.39],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [153.73, 27.15, 1635.39, 10],
+  "lump": {
+    "name": "glacier-bunny-40",
+    "path": ["vector3m",
+      [153.73, 26.15, 1635.39],
+      [141.77, 26.84, 1641.60]
+    ]
+  }
+},
+{
+  "aid": 51401,
+  "trans": [156.21, 26.72, 1647.97],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [156.21, 27.72, 1647.97, 10],
+  "lump": {
+    "name": "glacier-bunny-41",
+    "path": ["vector3m",
+      [156.21, 26.72, 1647.97],
+      [147.78, 26.46, 1641.88]
+    ],
+    "nav-mesh-actor": [ "uint32", 51400 ]
+  }
+},
+{
+  "aid": 51402,
+  "trans": [153.24, 26.86, 1655.58],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [153.24, 27.86, 1655.58, 10],
+  "lump": {
+    "name": "glacier-bunny-42",
+    "path": ["vector3m",
+      [153.24, 26.86, 1655.58],
+      [149.15, 26.54, 1645.72]
+    ],
+    "nav-mesh-actor": [ "uint32", 51400 ]
+  }
+},
+{
+  "aid": 51403,
+  "trans": [135.07, 27.25, 1650.57],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [135.07, 28.25, 1650.57, 10],
+  "lump": {
+    "name": "glacier-bunny-43",
+    "path": ["vector3m",
+      [135.07, 27.25, 1650.57],
+      [140.28, 27.01, 1643.04]
+    ],
+    "nav-mesh-actor": [ "uint32", 51400 ]
+  }
+},
+{
+  "aid": 51404,
+  "trans": [129.46, 27.75, 1638.40],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [129.46, 28.75, 1638.40, 10],
+  "lump": {
+    "name": "glacier-bunny-44",
+    "path": ["vector3m",
+      [129.46, 27.75, 1638.40],
+      [140.09, 26.81, 1637.09]
+    ],
+    "nav-mesh-actor": [ "uint32", 51400 ]
+  }
+},
+{
+  "aid": 51500,
+  "trans": [126.87, 26.35, 1698.31],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [126.87, 27.35, 1698.31, 10],
+  "lump": {
+    "name": "glacier-bunny-45",
+    "path": ["vector3m",
+      [126.87, 26.35, 1698.31],
+      [117.75, 26.59, 1691.63]
+    ],
+    "nav-mesh-actor": [ "uint32", 51500 ]
+  }
+},
+{
+  "aid": 51501,
+  "trans": [107.40, 26.46, 1686.83],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [107.40, 27.46, 1686.83, 10],
+  "lump": {
+    "name": "glacier-bunny-46",
+    "path": ["vector3m",
+      [107.40, 26.46, 1686.83],
+      [108.59, 27.03, 1696.28]
+    ],
+    "nav-mesh-actor": [ "uint32", 51500 ]
+  }
+},
+{
+  "aid": 51502,
+  "trans": [101.04, 27.46, 1702.23],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [101.04, 28.46, 1702.23, 10],
+  "lump": {
+    "name": "glacier-bunny-47",
+    "path": ["vector3m",
+      [101.04, 27.46, 1702.23],
+      [101.94, 27.07, 1694.76]
+    ],
+    "nav-mesh-actor": [ "uint32", 51500 ]
+  }
+},
+{
+  "aid": 51503,
+  "trans": [103.24, 26.54, 1686.88],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [103.24, 27.54, 1686.88, 10],
+  "lump": {
+    "name": "glacier-bunny-48",
+    "path": ["vector3m",
+      [103.24, 26.54, 1686.88],
+      [112.03, 26.50, 1689.55]
+    ],
+    "nav-mesh-actor": [ "uint32", 51500 ]
+  }
+},
+{
+  "aid": 51504,
+  "trans": [106.23, 26.65, 1680.57],
+  "etype": "snow-bunny",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [106.23, 27.65, 1680.57, 10],
+  "lump": {
+    "name": "glacier-bunny-49",
+    "path": ["vector3m",
+      [106.23, 26.65, 1680.57],
+      [114.38, 26.43, 1684.00]
+    ],
+    "nav-mesh-actor": [ "uint32", 51500 ]
+  }
+},
+
+// YETI
+{
+  "aid": 50702,
+  "trans": [2.79, 11.25, 1695.46],
+  "etype": "yeti-glacier",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [2.79, 12.25, 1695.46, 10],
+  "lump": {
+    "name": "glacier-yeti-1",
+    "num-lurkers": ["int32", 1],
+    "notice-dist": ["meters", 5.5],
+    "cam-notice-dist": ["meters", 5.0],
+    "cam-horz": ["meters", 10.0],
+    "cam-vert": ["meters", 10.0],
+    "path": ["vector3m",
+      [2.79, 11.25, 1695.46]
+    ],
+    "nav-mesh-actor": [ "uint32", 50700 ]
+  }
+},
+
+{
+  "aid": 50909,
+  "trans": [-62.62, 31.38, 1641.61],
+  "etype": "yeti-glacier",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [2.79, 12.25, 1695.46, 10],
+  "lump": {
+    "name": "glacier-yeti-2",
+    "num-lurkers": ["int32", 1],
+    "notice-dist": ["meters", 5.5],
+    "path": ["vector3m",
+      [-62.62, 31.38, 1641.61]
+    ],
+    "nav-mesh-actor": [ "uint32", 50900 ]
+  }
+},
+{
+  "aid":51012,
+  "trans": [-92.69, 21.99, 1453.74],
+  "etype": "yeti-glacier",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-92.69, 22.99, 1453.74, 10],
+  "lump": {
+    "name": "glacier-yeti-3",
+    "num-lurkers": ["int32", 1],
+    "notice-dist": ["meters", 2.5],
+    "path": ["vector3m",
+      [-92.69, 21.99, 1453.74],
+      [-97.27, 20.44, 1461.86]
+    ],
+    "nav-mesh-actor": [ "uint32", 51000 ]
+  }
+},
+{
+  "aid": 51300,
+  "trans": [131.15, 23.55, 1577.26],
+  "etype": "yeti-glacier",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [131.15, 24.55, 1577.26, 10],
+  "lump": {
+    "name": "glacier-yeti-4",
+    "num-lurkers": ["int32", 1],
+    "notice-dist": ["meters", 2.5],
+    "path": ["vector3m",
+      [131.15, 23.55, 1577.26]
+    ]
+  }
+},
+{
+  "aid": 51301,
+  "trans": [135.23, 23.93, 1585.98],
+  "etype": "yeti-glacier",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [135.23, 24.93, 1585.98, 10],
+  "lump": {
+    "name": "glacier-yeti-5",
+    "num-lurkers": ["int32", 1],
+    "notice-dist": ["meters", 2.5],
+    "path": ["vector3m",
+      [135.23, 23.93, 1585.98]
+    ],
+    "nav-mesh-actor": [ "uint32", 51300 ]
+  }
+},
+
+// BONELURKER
+{
+  "aid": 50910,
+  "trans": [-108.10, 26.28, 1595.22],
+  "etype": "bonelurker",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-108.10, 27.28, 1595.22, 10],
+  "lump": {
+    "name": "glacier-bonelurker-1",
+    "path": ["vector3m",
+      [-108.10, 26.28, 1595.22],
+      [-107.50, 26.80, 1606.69]
+    ],
+    "nav-mesh-actor": [ "uint32", 50900 ]
+  }
+},
+{
+  "aid": 51010,
+  "trans": [-76.16, 20.10, 1471.00],
+  "etype": "bonelurker",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-76.16, 21.10, 1471.00, 10],
+  "lump": {
+    "name": "glacier-bonelurker-2",
+    "path": ["vector3m",
+      [-76.16, 20.10, 1471.00],
+      [-85.73, 20.22, 1468.97]
+    ],
+    "nav-mesh-actor": [ "uint32", 51000 ]
+  }
+},
+{
+  "aid": 51011,
+  "trans": [-79.71, 20.34, 1481.50],
+  "etype": "bonelurker",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-79.71, 21.34, 1481.50, 10],
+  "lump": {
+    "name": "glacier-bonelurker-3",
+    "path": ["vector3m",
+      [-79.71, 20.34, 1481.50],
+      [-90.14, 19.58, 1478.70]
+    ],
+    "nav-mesh-actor": [ "uint32", 51000 ]
+  }
+},
+{
+  "aid": 51100,
+  "trans": [6.99, 12.58, 1542.12],
+  "etype": "bonelurker",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [6.99, 13.58, 1542.12, 10],
+  "lump": {
+    "name": "glacier-bonelurker-4",
+    "path": ["vector3m",
+      [6.99, 12.58, 1542.12],
+      [-2.13, 13.85, 1557.15]
+    ]
+  }
+},
+{
+  "aid": 51101,
+  "trans": [6.75, 14.47, 1573.02],
+  "etype": "bonelurker",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [6.75, 15.47, 1573.02, 10],
+  "lump": {
+    "name": "glacier-bonelurker-5",
+    "path": ["vector3m",
+      [6.75, 14.47, 1573.02],
+      [20.45, 12.34, 1584.14]
+    ],
+    "nav-mesh-actor": [ "uint32", 51100 ]
+  }
+},
+{
+  "aid": 51102,
+  "trans": [29.85, 12.77, 1570.99],
+  "etype": "bonelurker",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [29.85, 13.77, 1570.99, 10],
+  "lump": {
+    "name": "glacier-bonelurker-6",
+    "path": ["vector3m",
+      [29.85, 12.77, 1570.99],
+      [41.47, 11.86, 1559.95]
+    ],
+    "nav-mesh-actor": [ "uint32", 51100 ]
+  }
+},
+{
+  "aid":51103,
+  "trans": [45.22, 12.83, 1547.78],
+  "etype": "bonelurker",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [45.22, 13.83, 1547.78, 10],
+  "lump": {
+    "name": "glacier-bonelurker-7",
+    "path": ["vector3m",
+      [45.22, 12.83, 1547.78],
+      [31.17, 14.75, 1540.49]
+    ],
+    "nav-mesh-actor": [ "uint32", 51100 ]
+  }
+},
+{
+  "aid": 51505,
+  "trans": [92.46, 27.46, 1709.59],
+  "etype": "bonelurker",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [92.46, 28.46, 1709.59, 10],
+  "lump": {
+    "name": "glacier-bonelurker-8",
+    "path": ["vector3m",
+      [92.46, 27.46, 1709.59],
+      [96.12, 27.54, 1701.73]
+    ],
+    "nav-mesh-actor": [ "uint32", 51500 ]
+  }
+},
+
+// PUFFER
+{
+  "aid": 51600,
+  "trans": [121.31, 32.02, 1663.60],
+  "etype": "puffer",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [121.31, 35.02, 1663.60, 10],
+  "lump": {
+    "name": "glacier-puffer-6",
+    "path": ["vector3m",
+      [121.31, 34.02, 1663.60],
+      [140.68, 34.68, 1672.45],
+      [158.49, 33.63, 1681.81]
+    ],
+    "alt-actor": ["string", "glacier-puffer-7"],
+    "sync": ["float", 8.0, 0.0]
+  }
+},
+{
+  "aid": 51601,
+  "trans": [164.59, 32.02, 1693.91],
+  "etype": "puffer",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [164.59, 34.72, 1693.91, 10],
+  "lump": {
+    "name": "glacier-puffer-7",
+    "path": ["vector3m",
+      [164.59, 33.72, 1693.91],
+      [146.39, 34.13, 1687.33],
+      [125.92, 34.59, 1679.92]
+    ],
+    "nav-mesh-actor": [ "uint32", 51600 ],
+    "alt-actor": ["string", "glacier-puffer-6"],
+    "sync": ["float", 8.0, 0.5]
+  }
+},
+{
+  "aid": 51700,
+  "trans": [-6.99, 16.19, 1628.88],
+  "etype": "puffer",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [-6.99, 20.19, 1628.88, 10],
+  "lump": {
+    "name": "glacier-puffer-1",
+    "path": ["vector3m",
+      [-6.99, 19.19, 1628.88],
+      [5.23, 18.80, 1628.61],
+      [24.07, 18.19, 1628.19]
+    ],
+    "alt-actor": ["string", "glacier-puffer-2"],
+    "sync": ["float", 8.0, 0.5]
+  }
+},
+{
+  "aid": 51701,
+  "trans": [33.17, 16.47, 1636.92],
+  "etype": "puffer",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [33.17, 19.47, 1636.92, 10],
+  "lump": {
+    "name": "glacier-puffer-2",
+    "path": ["vector3m",
+      [33.17, 18.47, 1636.92],
+      [20.64, 18.07, 1637.78],
+      [7.40, 17.64, 1638.69]
+    ],
+    "nav-mesh-actor": [ "uint32", 51700 ],
+    "alt-actor": ["string", "glacier-puffer-1"],
+    "sync": ["float", 8.0, 0.0]
+  }
+},
+{
+  "aid": 51800,
+  "trans": [6.73, 14.96, 1496.26],
+  "etype": "puffer",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [6.73, 15.96, 1496.26, 10],
+  "lump": {
+    "name": "glacier-puffer-3",
+    "path": ["vector3m",
+      [6.73, 14.96, 1496.26],
+      [18.90, 14.78, 1493.93],
+      [33.09, 14.57, 1491.22]
+    ]
+  }
+},
+{
+  "aid": 51900,
+  "trans": [94.46, 28.80, 1420.49],
+  "etype": "puffer",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [94.46, 33.80, 1420.49, 10],
+  "lump": {
+    "name": "glacier-puffer-4",
+    "path": ["vector3m",
+      [94.46, 32.80, 1420.49],
+      [81.81, 30.61, 1439.04],
+      [84.57, 29.91, 1459.64]
+    ],
+    "alt-actor": ["string", "glacier-puffer-5"],
+    "sync": ["float", 8.0, 0.5]
+  }
+},
+{
+  "aid": 51901,
+  "trans": [85.34, 28.72, 1475.16],
+  "etype": "puffer",
+  "game_task": "(game-task none)",
+  "quat": [0,0,0,1],
+  "bsphere": [85.34, 35.72, 1475.16, 10],
+  "lump": {
+    "name": "glacier-puffer-5",
+    "path": ["vector3m",
+      [85.34, 34.72, 1475.16],
+      [62.27, 31.73, 1485.64],
+      [58.48, 31.68, 1508.55]
+    ],
+    "nav-mesh-actor": [ "uint32", 51900 ],
+    "alt-actor": ["string", "glacier-puffer-4"],
+    "sync": ["float", 8.0, 0.0]
+  }
+},
+{
+  "aid": 52000,
+  "trans": [ 519.66, -2.59, 594.47 ], // translation
+  "etype": "sharkey", // actor type
+  "game_task": "(game-task none)", // associated game task (for powercells, etc)
+  "quat": [ 0, 0, 0, 1 ], // quaternion
+  "bsphere": [ 519.66, -2.59, 594.47, 10 ], // bounding sphere
+  "lump": {
+    "name": "glacier-sharkey",
+    "water-height": [ "float", 0.000, 0.000, 0.000 ],
+    "scale": ["float", 1.5]
+  }
+},
+
+///////warp gate//////
+{
+  "trans": [ -8.97, 5.96, 2016 ],
+  "etype": "warpgate",
+  "game_task": 0,
+  "quat": [ 0, 0, 0, 1 ],
+  "bsphere": [ -8.97, 5.96, 2016, 10 ],
+  "lump": {
+    "name": "glacier-warpgate"
+  }
+},
+
+{
+  "trans": [ -9.237, 3.9, 2010 ],
+  "etype": "warp-gate-switch",
+  "game_task": 122,
+  "quat": [ 0, 0, 0, 1 ],
+  "bsphere": [ 534.43, 7.09, 474.54, 10 ],
+  "lump": {
+    "name": "glacier-warp-gate-switch",
+    "alt-actor": "glacier-training-part-1"
+  }
+},
+
+{
+  "trans": [ -8.97, 7.2, 2016 ],
+  "etype": "training-part",
+  "game_task": 0,
+  "quat": [ 0.0000, -0.8837, 0.0000, -0.4678 ],
+  "bsphere": [ -8.97, 7.96, 2016, 10 ],
+  "lump": {
+    "name": "glacier-training-part-1",
+    "effect-name": "'warpgate-loop",
+    "art-name": "group-training-warpgate",
+    "effect-param": [ "float", 3.0000, 80.0000, 12.0000, 40.0000 ],
+    "cycle-speed": [ "float", -1.0000, 0.0000 ]
+  }}
+  ]
+}
