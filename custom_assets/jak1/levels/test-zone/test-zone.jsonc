@@ -63,7 +63,7 @@
   // "art_groups": ["plat-ag"],
   "art_groups": ["babak-ag", "plat-ag", "plat-eco-ag"],
 
-  // If you have any custom models in the "custom_assets/jak1/models/custom_levels" folder that you want to use in your level, add them to this list.
+  // If you have any custom models in the "custom_assets/jak1/models/`custom_levels" folder that you want to use in your level, add them to this list.
   // Note: Like with art groups, these should also be added to your level's .gd file.
   "custom_models": ["test-actor"],
 
@@ -237,7 +237,35 @@
         "sync": ["float", 14, 0.0]
       }
     },
-
+    {//Swampy
+      "trans": [717.0, 5.0, -2027],
+      "etype": "linear-plat",
+      "game_task": 0,
+      "quat": [0, 0, 0, 1],
+      "bsphere": [0.0, 50.0, 17.0, 10],
+      "lump": {
+        "name": "linear-plat-1",
+        "path": ["vector4m",
+          [717.0, 5.0, -2027,1.0],
+          [717.0, 5.0, -2027,1.0],
+          [717.0, 20.0, -2027, 1.0],
+          [717.0, 20.0, -2027, 1.0],
+          [717.0, 5.0, -2027,1.0],
+          [717.0, 20.0, -2027, 1.0],
+          [717.0,20.0,-2027,1.0]
+        ],
+        "timings": ["float",
+          1.0, // offset before starting
+          2.0, // down to up (out)
+          2.0, // up to down (out)
+          4.0, // stay down
+          2.0, // down to up (back)
+          2.0, // up to down (back)
+          1.0 // immediately start back up
+          ],
+        "sync": ["float", 14, 0.0]
+      }
+    },
     {
       "trans": [0.0, 50.0, 17.0],
       "etype": "linear-plat",

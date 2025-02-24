@@ -1140,7 +1140,31 @@
              :lev0 'swamp
              :disp0 'display
              :lev1 'village2
-             :disp1 'special-vis))
+             :disp1 'special-vis)
+        (new 'static
+             'continue-point
+             :name "rat-cave-entrance"
+             :level 'swamp
+             :trans
+             (new 'static 'vector :x 2612289.2 :y -2047.5905 :z -8315907.5 :w 1.0)
+             :quat
+             (new 'static 'quaternion :y -0.6975 :w 0.7165)
+             :camera-trans
+             (new 'static 'vector :x 2661940.5 :y 20693.81 :z -8317980.5 :w 1.0)
+             :camera-rot
+             (new 'static 'array float 9 0.0406 0.0 0.9991 -0.1452 0.9893 0.0059 -0.9885 -0.1453 0.0402)
+             :load-commands
+             '((special "swamp-blimp-3" #t)
+              (special "precursor-arm-3" #t)
+              (special "swamp-tetherrock-13" #t)
+              (special "swamp-tetherrock-14" #t)
+              (special "swamp-tetherrock-15" #t)
+              (special "swamp-tetherrock-16" #t))
+             :vis-nick 'swa
+             :lev0 'swamp
+             :disp0 'display
+             :lev1 'rat-cave
+             :disp1 'display))
        :tasks
        '(36 37 38 39 40 41 42 43)
        :priority 100
@@ -2525,6 +2549,117 @@
        '()
        :wait-for-load #t))
 
+;;----------------------------------------------------------Original Levels---------------------------------------------------------------------
+(define tree-zone
+  (new 'static
+       'level-load-info
+       :index 27
+       :name 'tree-zone
+       :visname 'tree-zone-vis
+       ;; name + -vis
+       :nickname 'tre
+       ;; nickname
+       :packages
+       '()
+       :sound-banks
+       '()
+       :music-bank #f
+       :ambient-sounds
+       '()
+       :mood '*village1-mood*
+       :mood-func 'update-mood-village1
+       :ocean 'none
+       :sky #t
+       :sun-fade 1.0
+       :continues
+        '((new 'static
+             'continue-point
+             :name "tree-start"
+             :level 'tree-zone
+             :trans
+             (new 'static 'vector :x 11479892.0 :y -163656.5 :z -18266490.0 :w 1.0)
+             :quat
+             (new 'static 'quaternion :y -0.9589 :w -0.2836)
+             :camera-trans
+             (new 'static 'vector :x 11526721.0 :y -143482.47 :z -18257412.0 :w 1.0)
+             :camera-rot
+             (new 'static 'array float 9 -0.3027 0.0 0.953 -0.1235 0.9915 -0.0392 -0.945 -0.1296 -0.3001)
+             :load-commands
+             '()
+             :vis-nick 'lav
+             :lev0 'tree-zone
+             :disp0 'display
+             :lev1 'lavatube
+             :disp1 'display))
+       :tasks
+       '()
+       :priority 100
+       :load-commands
+       '()
+       :alt-load-commands
+       '()
+       :bsp-mask #xffffffffffffffff
+       :bsphere
+       (new 'static 'sphere :w 167772160000.0)
+       :bottom-height (meters -20)
+       :run-packages
+       '()
+       :wait-for-load #t))
+
+(define rat-cave
+  (new 'static
+       'level-load-info
+       :index 28
+       :name 'rat-cave
+       :visname 'rat-cave-vis
+       ;; name + -vis
+       :nickname 'rtc
+       ;; nickname
+       :packages '(swamp)
+       :sound-banks '(swamp)
+       :music-bank 'swamp
+       :ambient-sounds
+       '()
+       :mood '*swamp-mood*
+       :mood-func 'update-mood-swamp
+       :ocean 'none
+       :sky #t
+       :sun-fade 1.0
+       :continues
+        '((new 'static
+             'continue-point
+             :name "rat-cave"
+             :level 'rat-cave
+             :trans
+             (new 'static 'vector :x (meters 679.74) :y (meters -15.34) :z (meters -1956) :w 1.0)
+             :quat
+             (new 'static 'quaternion :w 1.0)
+             :camera-trans
+             (new 'static 'vector :x (meters 678) :y (meters -10) :z (meters -1945) :w 1.0)
+             :camera-rot
+             (new 'static 'array float 9 -0.9995 -0.0000 -0.0297 0.0043 0.9891 -0.1470 0.0294 -0.1471 -0.9886)
+             :load-commands '()
+             :vis-nick 'rtc
+             :lev0 'rat-cave
+             :disp0 'display
+             :lev1 'swamp
+             :disp1 #f))
+       :tasks
+       '()
+       :priority 100
+       :load-commands
+       '()
+       :alt-load-commands
+       '()
+       :bsp-mask #xffffffffffffffff
+       :bsphere
+       (new 'static 'sphere :w 167772160000.0)
+       :bottom-height (meters -80)
+       :run-packages
+       '()
+       :wait-for-load #t))
+
+;;----------------------------------------------------------Ported Levels---------------------------------------------------------------------
 
 (define glacier
   (new 'static
@@ -2557,6 +2692,19 @@
              (new 'static 'vector :x 0.0 :y 4096.0 :z 0.0 :w 1.0)
              :camera-rot
              (new 'static 'array float 9 -0.9995 -0.0000 -0.0297 0.0043 0.9891 -0.1470 0.0294 -0.1471 -0.9886)
+             :load-commands
+             '()
+             :vis-nick 'gla
+             :lev0 'glacier
+             :disp0 'display
+             :lev1 #f
+             :disp1 #f)
+          (new 'static
+             'continue-point
+             :name "glacier-swamp"
+             :level 'glacier
+             :trans
+             (new 'static 'vector :x (meters 896) :y (meters 9.09) :z (meters -1865.) :w 1.0)
              :load-commands
              '()
              :vis-nick 'gla
@@ -2671,5 +2819,7 @@
        '()
        :wait-for-load #t))
 
-(cons! *level-load-list* 'glacier)
-(cons! *level-load-list* 'test-zone)
+(cons! *level-load-list* 'glacier) ;;Index 24
+(cons! *level-load-list* 'test-zone) ;;Index 26
+(cons! *level-load-list* 'tree-zone) ;;Index 27
+(cons! *level-load-list* 'rat-cave) ;;Index 28

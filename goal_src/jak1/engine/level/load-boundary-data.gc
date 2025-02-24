@@ -313,7 +313,7 @@
                                         :bot -568353.0000
                                         :points
                                         (10635460.0000 -19261390.0000 10641390.0000 -18641098.0000 11673320.0000 -18631850.0000 11992955.0000 -19068516.0000)
-                                        :fwd (load citadel lavatube))
+                                        :fwd (load tree-zone lavatube))
                   (static-load-boundary :flags (closed)
                                         :top 30786.0390
                                         :bot -568353.0000
@@ -326,7 +326,7 @@
                                         :bot 222822.3125
                                         :points
                                         (10045198.0000 -16826564.0000 10052340.0000 -16500909.0000)
-                                        :fwd (load lavatube citadel))
+                                        :fwd (load lavatube tree-zone))
                   (static-load-boundary :flags
                                         ()
                                         :top 104778.3359
@@ -1537,8 +1537,21 @@
                   :fwd (checkpt "glacier-checkpoint4" #f)
                   :bwd (checkpt "glacier-checkpoint4" #f)
   )
+                  ;;-----------------------------Rat cave---------------
+                  (static-load-boundary :flags (player )
+                  :top (meters 25.0) :bot (meters 14.0)
+                  :points ( (meters 704.03) (meters -1947.56) (meters 687) (meters -1944))
+                  :fwd (display swamp #f)
+                  :bwd (display swamp #t)
+                  )
+                  ;; (static-load-boundary :flags (player )
+                  ;; :top (meters 25.0) :bot (meters 14.0)
+                  ;; :points ( (meters 704.03) (meters -1959.56) (meters 687) (meters -1956))
+                  ;; :bwd (load rat-cave swamp)
+                  ;; )
+  )
 
 
-                                        ))
+)
 
 (doarray (i *static-load-boundary-list*) (load-boundary-from-template (the-as (array object) i)))
