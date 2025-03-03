@@ -61,7 +61,7 @@
     // All art groups you want to use in your custom level. Will add their models and corresponding textures to the FR3 file.
     // Note: You will still have to add them to your level's .gd file.
     // "art_groups": ["plat-ag"],
-    "art_groups": ["babak-ag", "plat-ag","pontoonfive-ag","plat-flip-ag"],
+    "art_groups": ["babak-ag", "plat-ag","pontoonfive-ag","plat-flip-ag","swamp-rat-nest-ag","water-anim-sunken-dark-eco-ag"],
   
     // If you have any custom models in the "custom_assets/jak1/models/`custom_levels" folder that you want to use in your level, add them to this list.
     // Note: Like with art groups, these should also be added to your level's .gd file.
@@ -278,26 +278,67 @@
                 [669.21, -15.20, -1986.1, 1.0]
                 ],
               "timings": ["float",
-                3.0, // offset before starting
-                1.0, // down to up (out)
-                3.0, // up to down (out)
-                1.0, // stay down
-                3.0 // down to up (back)
+                4.0, // A to B
+                1.0, // B to C
+                4.0, // C to D
+                1.0 // D to A
                 ],
-              "sync": ["float", 8, 0.0]
+              "sync": ["float", 13, 0.0]
             }
           },
-//------------------------------------------------------------Rats--------------------------------------------------------
+//------------------------------------------------------------Crates--------------------------------------------------------
           {
-            "trans": [681.25,-15.20,-1998.6], //X Y Z coordinates of entity TODO this
-            "etype": "swamp-rat-nest",
+            "trans": [649.21,-23.70,-2032], //X Y Z coordinates of entity TODO this
+            "etype": "crate",
             "game_task": 0,
             "quat":[0,0,0,1],
-            "bsphere":[681.25,-15.20,-1973.9,10],//Should be the same as trans
+            "bsphere":[649.21,-23.70,-2032,10],//Should be the same as trans
             "lump":{
-                "name":"rat-nest-block-path"
+                "name":"rat-orb-crate1",
+                "crate-type": "'steel"
             }
           },
+          {
+            "trans": [649.21,-21.92,-2032], //X Y Z coordinates of entity TODO this
+            "etype": "crate",
+            "game_task": 0,
+            "quat":[0,0,0,1],
+            "bsphere":[649.21,-21.92,-2032,10],//Should be the same as trans
+            "lump":{
+                "name":"rat-orb-crate2",
+                "crate-type": "'steel"
+            }
+          },
+          {
+            "trans": [690.09,-15.36,-2026], //X Y Z coordinates of entity TODO this
+            "etype": "ecovent",
+            "game_task": 0,
+            "quat":[0,0,0,1],
+            "bsphere":[690.09,-15.36,-2026,10],//Should be the same as trans
+            "lump":{
+                "name":"rat-ecovent-yellow-1",
+                "eco-info": ["int32",1,  1],
+                "options": ["int32",5]
+            }
+          },
+          {
+            "trans": [638.16,-18.51,-1049], //X Y Z coordinates of entity TODO this
+            "etype": "dark-eco-pool",
+            "game_task": 0,
+            "quat":[0,0,0,1],
+            "bsphere":[638.16,-18.51,-1049,10],//Should be the same as trans
+            "lump":{
+                "name":"ratt-dark-eco1",
+                "water-height": ["float",
+                -18.51, // Dark Eco Water Height
+                2048, // Wade Height 
+                8192, // Swim Height
+                1572872.0 // Flags
+          ],
+                "look": ["int32", 13],
+                "vis-dist": ["meters", 200]
+            }
+          }
       ]
   }
   
