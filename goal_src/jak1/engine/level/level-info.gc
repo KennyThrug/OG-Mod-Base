@@ -2653,10 +2653,11 @@
        '()
        :bsp-mask #xffffffffffffffff
        :bsphere
-       (new 'static 'sphere :w 167772160000.0)
+       (new 'static 'sphere :x 1986560.0 :z -8417280.0 :w 1003520.0)
+     ;;   :buzzer 43
        :bottom-height (meters -80)
        :run-packages
-       '()
+       '("common")
        :wait-for-load #t))
 
 ;;----------------------------------------------------------Ported Levels---------------------------------------------------------------------

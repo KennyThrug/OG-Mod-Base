@@ -1,4 +1,3 @@
-;; DGO definition file for Awful Village level
 ;; We use the convention of having a longer DGO name for levels without precomputed visibility.
 
 ;; the actual file name still needs to be 8.3
@@ -7,6 +6,7 @@
   "linear-plat.o"
   "plat-ag.go"
   "pontoonfive-ag.go"
+  "tpage-630.go"
   "water-anim-sunken-dark-eco-ag.go"
   "swamp-rat-nest.o"
   "plat-flip.o"
